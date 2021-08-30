@@ -1,0 +1,43 @@
+.textAnim {
+    animation: hideFont 1s;
+}
+
+.textAnim:nth-child(1) {
+    animation: hideFont 3s;
+}
+
+.textAnim:nth-child(3) {
+    animation: hideFont 6s;
+}
+
+.textAnim:nth-child(5) {
+    animation: hideFont 9s;
+}
+
+.textAnim:nth-child(7) {
+    animation: hideFont 12s;
+}
+
+.textAnim:nth-child(9) {
+    animation: hideFont 15s;
+}
+
+
+
+
+/* .textAnim:nth-child(5) {
+    animation: hideFont 1s infinite;
+} */
+
+@keyframes hideFont {
+    from{
+        opacity: 0%;
+    }
+    to{
+        opacity: 100%;
+    }
+}
+
+.raised {
+    box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+}
