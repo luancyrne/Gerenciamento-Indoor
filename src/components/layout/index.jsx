@@ -8,14 +8,16 @@ import 'react-minimal-side-navigation/lib/ReactMinimalSideNavigation.css';
 import { FiHome, FiUsers } from 'react-icons/fi';
 import { FaProjectDiagram } from 'react-icons/fa';
 import { MdCardMembership } from 'react-icons/md';
-import whiteLogo from '../../styles/images/whiteLogo.png'
-import { Card } from 'primereact/card';
+import whiteLogo from '../../styles/images/whiteLogo.png';
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 const Layout = (props) => {
 
     return (
         <main style={{ display: 'flex', height: '100%', width: '100%' }}>
-            <menu style={{ width: '10%', display: 'flex', flexDirection: 'column', background: 'linear-gradient(90deg,#ff773b,#ff8e24 35%,#ff8e24)' }}>
+            <menu style={{minWidth:'200px', width: '10%', height: '100%', display: 'flex', flexDirection: 'column', background: 'linear-gradient(90deg,#ff773b,#ff8e24 35%,#ff8e24)' }}>
                 <div style={{ display: "flex", alignItems: 'center', justifyContent: "center" }}>
                     <img style={{ width: '100px', margin: '20px' }} src={whiteLogo} alt="CNX Telecom - Você sempre conectado!" />
                 </div>
@@ -59,9 +61,12 @@ const Layout = (props) => {
                     ]}
                 />
             </menu>
-            <Card title={props.title} style={{ width: '90%' }}>
+            <div style={{ height: '96.9%', width: '100%', marginLeft: '30px', marginTop: '30px', display: 'flex', flexDirection: 'column' }}>
+                <div>
+                    <Title level={3}>{props.title}</Title>
+                </div>
                 {props.children}
-            </Card>
+            </div>
         </main>
     )
 }
