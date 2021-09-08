@@ -3,72 +3,70 @@ import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import '../../styles/css/layout.css';
 import 'antd/dist/antd.css';
-import { Navigation } from 'react-minimal-side-navigation';
-import 'react-minimal-side-navigation/lib/ReactMinimalSideNavigation.css';
-import { FiHome, FiUsers } from 'react-icons/fi';
-import { FaProjectDiagram } from 'react-icons/fa';
-import { MdCardMembership } from 'react-icons/md';
 import whiteLogo from '../../styles/images/whiteLogo.png';
-import { Typography } from 'antd';
+import { Layout, Breadcrumb, Dropdown, Menu, Avatar } from 'antd';
+import { IoTvSharp, IoImages } from 'react-icons/io5'
+import { FaThList, FaUserAlt } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
-const { Title } = Typography;
+const { Content, Footer } = Layout;
 
-const Layout = (props) => {
+const link = ' '
+
+const menu = (
+    <Menu>
+        <Menu.Item key='1'>
+            <a href={link}>
+                Perfil
+            </a>
+        </Menu.Item>
+        <Menu.Item key='2' style={{ color: 'red' }}>
+            <a href={link}>
+                Sair
+            </a>
+        </Menu.Item>
+    </Menu>
+);
+
+const LayoutMaster = (props) => {
+    const navigate = useNavigate()
 
     return (
-        <main style={{ display: 'flex', height: '100%', width: '100%' }}>
-            <menu style={{minWidth:'200px', width: '10%', height: '100%', display: 'flex', flexDirection: 'column', background: 'linear-gradient(90deg,#ff773b,#ff8e24 35%,#ff8e24)' }}>
-                <div style={{ display: "flex", alignItems: 'center', justifyContent: "center" }}>
-                    <img style={{ width: '100px', margin: '20px' }} src={whiteLogo} alt="CNX Telecom - Você sempre conectado!" />
-                </div>
-                <Navigation
-                    activeItemId="/management/members"
-                    onSelect={({ itemId }) => {
-                    }}
-                    items={[
-                        {
-                            title: 'Dashboard',
-                            itemId: '/dashboard',
-                            elemBefore: () => <FiHome />,
-                        },
-                        {
-                            title: 'Management',
-                            itemId: '/management',
-                            elemBefore: () => <FiUsers />,
-                            subNav: [
-                                {
-                                    title: 'Projects',
-                                    itemId: '/management/projects',
-                                    elemBefore: () => <FaProjectDiagram />,
-                                },
-                                {
-                                    title: 'Members',
-                                    itemId: '/management/members',
-                                    elemBefore: () => <MdCardMembership />,
-                                },
-                            ],
-                        },
-                        {
-                            title: 'Another Item',
-                            itemId: '/another',
-                            subNav: [
-                                {
-                                    title: 'Teams',
-                                    itemId: '/management/teams',
-                                },
-                            ],
-                        },
-                    ]}
-                />
-            </menu>
-            <div style={{ height: '96.9%', width: '100%', marginLeft: '30px', marginTop: '30px', display: 'flex', flexDirection: 'column' }}>
+        <Layout style={{ height: '100%' }}>
+            <header style={{ height: 64, background: 'linear-gradient(180deg, rgba(251,116,61,1) 28%, rgba(251,132,45,1) 77%)', padding: '0 50px', marginBottom: '50px', boxShadow: '5px 5px 24px 5px #000000', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                 <div>
-                    <Title level={3}>{props.title}</Title>
+                    <img onClick={()=>{navigate('/dashboard')}} src={whiteLogo} alt="CNX Telecom - Você sempre conectado!" style={{ width: '100px', cursor:'pointer' }} />
                 </div>
-                {props.children}
-            </div>
-        </main>
+                <div style={{ height: '100%', display: 'flex' }}>
+                    <button>
+                        <IoTvSharp style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />TV
+                    </button>
+                    <button>
+                        <IoImages style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Arquivos
+                    </button>
+                    <button>
+                        <FaThList style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Lista de reprodução
+                    </button>
+                </div>
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                    <Dropdown overlay={menu}>
+                        <a href={link} className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                            <Avatar shape="square" size={40} icon={<FaUserAlt />} />
+                        </a>
+                    </Dropdown>
+                </div>
+            </header>
+            <Content style={{ padding: '0 50px' }}>
+                <Breadcrumb style={{ margin: '16px 0' }}>
+
+                </Breadcrumb>
+                <Layout className="site-layout-background" style={{ padding: '24px 0' }}>
+                    <Content style={{ padding: '0 24px', minHeight: 280 }}>{props.children}</Content>
+                </Layout>
+            </Content>
+            <Footer style={{ textAlign: 'center' }}>CNX Indoor System ©2021 Criado por CNX Telecom</Footer>
+        </Layout>
     )
 }
 
-export default Layout;
+export default LayoutMaster;

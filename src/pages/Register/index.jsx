@@ -1,6 +1,6 @@
 import React from 'react';
-import Layout from '../../components/layout/index';
-import { Typography, Divider, Select, Input, Spin, Button } from 'antd';
+import LayoutMaster from '../../components/layout/index';
+import { Typography, Select, Input, Spin, Button } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import Api from '../../services/api';
@@ -47,9 +47,8 @@ const Register = () => {
     }
 
     return (
-        <Layout title='Cadastrar Usuário'>
-            <Divider />
-            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <LayoutMaster>
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignContent:'center', alignItems:'center' }}>
 
                 <Text strong>Usuário:</Text>
                 <Input onChange={handleUser} value={user.nome} name='nome' size="large" style={{ width: '500px' }} placeholder="Nome do usuário" prefix={<UserOutlined />} />
@@ -84,7 +83,7 @@ const Register = () => {
                     <Button type='primary' onClick={handleSubmit}>Cadastrar</Button>
                 </div>
             </div>
-        </Layout>
+        </LayoutMaster>
     )
 }
 
