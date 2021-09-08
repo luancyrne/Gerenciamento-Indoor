@@ -5,6 +5,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import Api from '../../services/api';
 import registerUser from '../../services/register';
+import { useNavigate } from 'react-router';
 
 const { Text } = Typography;
 
@@ -21,6 +22,7 @@ const Register = () => {
         senha: '',
         loja: []
     })
+    const navigate = useNavigate()
 
     React.useEffect(() => {
         Api.post('api.php', form_data).then(response => {
@@ -79,7 +81,7 @@ const Register = () => {
                 }
                 <br />
                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '500px' }}>
-                    <Button type='primary' danger>Cancelar</Button>
+                    <Button type='primary' onClick={()=>{navigate('/users')}} danger>Cancelar</Button>
                     <Button type='primary' onClick={handleSubmit}>Cadastrar</Button>
                 </div>
             </div>

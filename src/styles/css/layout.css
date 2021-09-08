@@ -24,7 +24,7 @@ header {
   font-family: RegularFont;
 }
 
-div > button {
+#menuButton {
   background: transparent;
   border: 0;
   padding: 0px 50px;

@@ -6,8 +6,10 @@ import 'antd/dist/antd.css';
 import whiteLogo from '../../styles/images/whiteLogo.png';
 import { Layout, Breadcrumb, Dropdown, Menu, Avatar } from 'antd';
 import { IoTvSharp, IoImages } from 'react-icons/io5'
-import { FaThList, FaUserAlt } from 'react-icons/fa';
+import { FaThList, FaUserAlt, FaUsers } from 'react-icons/fa';
+import { AiTwotoneEdit } from 'react-icons/ai'
 import { useNavigate } from 'react-router-dom';
+import auth from '../../services/tempAuth';
 
 const { Content, Footer } = Layout;
 
@@ -28,6 +30,48 @@ const menu = (
     </Menu>
 );
 
+const MenuDinamic = () => {
+    const navigate = useNavigate()
+    return (
+        <>
+            {auth.type === 'dev' || auth.type === 'admin' ? (
+                <>
+                    <button id='menuButton'>
+                        <IoTvSharp style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />TV
+                    </button>
+                    <button  id='menuButton'>
+                        <IoImages style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Arquivos
+                    </button>
+                    <button  id='menuButton'>
+                        <FaThList style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Lista de reprodução
+                    </button>
+                    <button  id='menuButton'>
+                        <AiTwotoneEdit style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Atualizações
+                    </button>
+                    <button  id='menuButton' onClick={()=>{navigate('/users')}}>
+                        <FaUsers style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Usuários
+                    </button>
+                </>
+            ) :
+                (
+                    <>
+                        <button  id='menuButton'>
+                            <IoTvSharp style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />TV
+                        </button>
+                        <button  id='menuButton'>
+                            <IoImages style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Arquivos
+                        </button>
+                        <button  id='menuButton'>
+                            <FaThList style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Lista de reprodução
+                        </button>
+                    </>
+                )
+
+            }
+        </>
+    )
+}
+
 const LayoutMaster = (props) => {
     const navigate = useNavigate()
 
@@ -35,18 +79,10 @@ const LayoutMaster = (props) => {
         <Layout style={{ height: '100%' }}>
             <header style={{ height: 64, background: 'linear-gradient(180deg, rgba(251,116,61,1) 28%, rgba(251,132,45,1) 77%)', padding: '0 50px', marginBottom: '50px', boxShadow: '5px 5px 24px 5px #000000', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                 <div>
-                    <img onClick={()=>{navigate('/dashboard')}} src={whiteLogo} alt="CNX Telecom - Você sempre conectado!" style={{ width: '100px', cursor:'pointer' }} />
+                    <img onClick={() => { navigate('/dashboard') }} src={whiteLogo} alt="CNX Telecom - Você sempre conectado!" style={{ width: '100px', cursor: 'pointer' }} />
                 </div>
                 <div style={{ height: '100%', display: 'flex' }}>
-                    <button>
-                        <IoTvSharp style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />TV
-                    </button>
-                    <button>
-                        <IoImages style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Arquivos
-                    </button>
-                    <button>
-                        <FaThList style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Lista de reprodução
-                    </button>
+                    <MenuDinamic />
                 </div>
                 <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
                     <Dropdown overlay={menu}>
