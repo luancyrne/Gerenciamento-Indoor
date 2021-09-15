@@ -1,108 +1,83 @@
 import React from 'react';
-import 'primereact/resources/themes/saga-blue/theme.css';
-import 'primereact/resources/primereact.min.css';
-import '../../styles/css/layout.css';
+import '../../Styles/layout.css';
+import whiteLogo from '../../Assets/img/whiteLogo.png'
+import { Avatar, Dropdown, Menu, Button } from 'antd';
+import { AiOutlineUser } from 'react-icons/ai/index';
 import 'antd/dist/antd.css';
-import whiteLogo from '../../styles/images/whiteLogo.png';
-import { Layout, Breadcrumb, Dropdown, Menu, Avatar } from 'antd';
-import { IoTvSharp, IoImages } from 'react-icons/io5'
-import { FaThList, FaUserAlt, FaUsers } from 'react-icons/fa';
-import { AiTwotoneEdit } from 'react-icons/ai'
-import { useNavigate } from 'react-router-dom';
-import auth from '../../services/tempAuth';
+import { IoTvSharp, IoSettings } from 'react-icons/io5';
+import { FaListAlt, FaStore, FaUsers } from 'react-icons/fa';
+import { AiFillFile } from 'react-icons/ai';
+import { useNavigate } from 'react-router';
+import { ModalEditUserCtx, ModalEditUser } from '../ModalsUser/ModalEditUser';
 
-const { Content, Footer } = Layout;
+const { SubMenu } = Menu;
 
-const link = ' '
+const Layout = (props)=> {
+  const [visibleEdit, setVisibleEdit] = React.useState(false);
+  const [selection, setSelection] = React.useState(0);
+  const navigate = useNavigate();
 
-const menu = (
+  const handleEditUser = ()=>{
+    setSelection(localStorage.getItem('id'))
+    setVisibleEdit(true)
+  }
+
+  const menu = (
     <Menu>
-        <Menu.Item key='1'>
-            <a href={link}>
-                Perfil
-            </a>
-        </Menu.Item>
-        <Menu.Item key='2' style={{ color: 'red' }}>
-            <a href={link}>
-                Sair
-            </a>
-        </Menu.Item>
+      <Menu.Item key='1'>
+        <Button onClick={handleEditUser} type='primary'>Perfil</Button>
+      </Menu.Item>
+      <Menu.Item key='2'>
+        <Button onClick={() => {
+          localStorage.clear()
+          window.location.reload()
+        }} danger type='primary'>Sair</Button>
+      </Menu.Item>
     </Menu>
-);
+  );
 
-const MenuDinamic = () => {
-    const navigate = useNavigate()
-    return (
-        <>
-            {auth.type === 'dev' || auth.type === 'admin' ? (
-                <>
-                    <button id='menuButton'>
-                        <IoTvSharp style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />TV
-                    </button>
-                    <button  id='menuButton'>
-                        <IoImages style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Arquivos
-                    </button>
-                    <button  id='menuButton'>
-                        <FaThList style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Lista de reprodução
-                    </button>
-                    <button  id='menuButton'>
-                        <AiTwotoneEdit style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Atualizações
-                    </button>
-                    <button  id='menuButton' onClick={()=>{navigate('/users')}}>
-                        <FaUsers style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Usuários
-                    </button>
-                </>
-            ) :
-                (
-                    <>
-                        <button  id='menuButton'>
-                            <IoTvSharp style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />TV
-                        </button>
-                        <button  id='menuButton'>
-                            <IoImages style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Arquivos
-                        </button>
-                        <button  id='menuButton'>
-                            <FaThList style={{ fontSize: 20, marginBottom: '-4px', marginRight: '5px' }} />Lista de reprodução
-                        </button>
-                    </>
-                )
-
+  return (
+    <>
+      <ModalEditUserCtx.Provider value={{ visibleEdit, setVisibleEdit, selection }}>
+        <ModalEditUser />
+      </ModalEditUserCtx.Provider>
+      <header className='navigator' style={{ height: '60px' }}>
+        <div className='menunavigate'>
+          <img src={whiteLogo} alt="CNX Telecom - Você sempre conectado" />
+        </div>
+        <div className='menunavigate' style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Dropdown overlay={menu} placement="bottomCenter" arrow>
+            <Avatar style={{ marginRight: '39px', cursor: 'pointer' }} shape="square" size="large" icon={<AiOutlineUser />} />
+          </Dropdown>
+        </div>
+      </header>
+      <section className='content'>
+        <div>
+          <Menu style={{ display: 'flex', justifyContent: 'center' }} mode="horizontal">
+            <Menu.Item onClick={() => { navigate('/dashboard') }} key="TVs" icon={<IoTvSharp />}>
+              TVs
+            </Menu.Item>
+            <Menu.Item key="List" icon={<FaListAlt />}>
+              Lista de conteúdos
+            </Menu.Item>
+            <Menu.Item key="Contents" icon={<AiFillFile />}>
+              Conteúdos
+            </Menu.Item>
+            {
+              localStorage.getItem('type') === 'admin' ? <SubMenu key="Tools" icon={<IoSettings />} title="Ferramentas">
+                <Menu.Item key="users" onClick={()=>navigate('/users')} icon={<FaUsers />}>Usuários</Menu.Item>
+                <Menu.Item key="stores" onClick={() => { navigate('/stores') }} icon={<FaStore />}>Lojas</Menu.Item>
+              </SubMenu> : null
             }
-        </>
-    )
+          </Menu>
+        </div>
+        <div style={{ height: '100%' }}>
+          {props.children}
+        </div>
+      </section>
+
+    </>
+  )
 }
 
-const LayoutMaster = (props) => {
-    const navigate = useNavigate()
-
-    return (
-        <Layout style={{ height: '100%' }}>
-            <header style={{ height: 64, background: 'linear-gradient(180deg, rgba(251,116,61,1) 28%, rgba(251,132,45,1) 77%)', padding: '0 50px', marginBottom: '50px', boxShadow: '5px 5px 24px 5px #000000', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <div>
-                    <img onClick={() => { navigate('/dashboard') }} src={whiteLogo} alt="CNX Telecom - Você sempre conectado!" style={{ width: '100px', cursor: 'pointer' }} />
-                </div>
-                <div style={{ height: '100%', display: 'flex' }}>
-                    <MenuDinamic />
-                </div>
-                <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-                    <Dropdown overlay={menu}>
-                        <a href={link} className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                            <Avatar shape="square" size={40} icon={<FaUserAlt />} />
-                        </a>
-                    </Dropdown>
-                </div>
-            </header>
-            <Content style={{ padding: '0 50px' }}>
-                <Breadcrumb style={{ margin: '16px 0' }}>
-
-                </Breadcrumb>
-                <Layout className="site-layout-background" style={{ padding: '24px 0' }}>
-                    <Content style={{ padding: '0 24px', minHeight: 280 }}>{props.children}</Content>
-                </Layout>
-            </Content>
-            <Footer style={{ textAlign: 'center' }}>CNX Indoor System ©2021 Criado por CNX Telecom</Footer>
-        </Layout>
-    )
-}
-
-export default LayoutMaster;
+export default Layout;

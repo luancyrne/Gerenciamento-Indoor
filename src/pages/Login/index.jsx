@@ -1,88 +1,115 @@
-import React from 'react';
-import whiteLogo from '../../styles/images/whiteLogo.png';
-import { Typography } from 'antd';
-import { InputText } from 'primereact/inputtext';
-import { Password } from 'primereact/password';
-import { Button } from 'primereact/button';
-import { ScrollPanel } from 'primereact/scrollpanel'
-import 'primereact/resources/themes/saga-blue/theme.css'
-import 'primereact/resources/primereact.min.css'
-import 'antd/dist/antd.css'
-import '../../styles/css/Login.css'
-
-const { Title, Text } = Typography
-
-const style = {
-    main: {
-        display: 'flex',
-        height: '100%',
-        width: '100%',
-        background: 'linear-gradient(90deg, rgb(255, 119, 59) 0%, rgb(255, 142, 36) 35%, rgb(255, 84, 67) 100%)'
-    },
-    divInfo: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'column',
-        height: '100%',
-        width: '100%'
-    },
-    sectionInfo: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        color: '#ffffff'
-    },
-    sectionLogin: {
-        height: '10%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'space-between'
-    },
-    input: {
-        width: '250px',
-        height: '29px',
-        marginTop: '40px',
-        marginRight: '10px',
-        marginLeft: '10px'
-    }
-}
+import React from "react";
+import '../../Styles/login.css';
+import whiteLogo from '../../Assets/img/whiteLogo.png';
+import getStoreGuest from "../../Services/controller/store/getStoreGuest";
+import login from '../../Services/login';
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { LoadingCnx, LoadingCnxCtx } from '../../Components/LodingCnx';
+import store from "../../Store/authStore";
+import {Checkbox } from 'antd'
 
 const Login = () => {
-    return (
-        <main style={style.main}>
-            <div style={style.divInfo}>
-                <section style={style.sectionLogin}>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <img src={whiteLogo} style={{ marginTop: '8px', height: '75px', width: '150px', marginLeft: '20px' }} alt="CNX Telecom - você sempre conectado!" />
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: '20px' }}>
-                        <InputText className='raised' placeholder='Usuário' style={style.input}></InputText>
-                        <Password className='raised' placeholder='Senha' style={{ width: '193px', height: '29px', marginTop: '40px', marginRight: '19px', marginLeft: '10px' }} feedback={false}/>
-                        <Button style={{ marginTop: '40px', height: '29px' }} className='p-button-raised p-button-warning'>Entrar</Button>
-                    </div>
+    const [stores, setStores] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    const [message, setMessage] = React.useState('');
+    const [adminCheck, setAdminCheck] = React.useState(false);
+    const [disableCheck, setDisableCheck] = React.useState(false)
+    const [userInfo, setUserinfo] = React.useState({
+        name: '',
+        password: '',
+        store: ''
+    })
 
-                </section>
-                <section style={style.sectionInfo}>
-                    <ScrollPanel style={{ height: '100%', width: '100%' }}>
-                        <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                            <Title className='textAnim' style={{ color: '#fff' }}>Gerencie o conteúdo que sera mostrado a seus clientes</Title>
-                            <p style={{ width: '50%', textAlign: 'center' }} >
-                                <Text className='textAnim'style={{color:'#fff'}} strong >Organize suas lojas por tela</Text><br/>
-                                <Text className='textAnim' style={{color:'#fff'}} strong >Controle o conteúdo que sera exibido</Text><br/>
-                                <Text className='textAnim' style={{color:'#fff'}} strong >Faça o upload dos conteúdos</Text><br/>
-                                <Text className='textAnim' style={{color:'#fff'}} strong >Escolha o tempo de reprodução</Text><br/>
-                                <Text className='textAnim' style={{color:'#fff'}} strong  >Escolha o formato e posicionamento de seus conteúdos</Text><br/>
-                            </p>
-                        </div>
-                    </ScrollPanel>
-                </section>
-            </div>
+    React.useEffect(() => {
+        getStoreGuest().then(resolve => {
+            if (resolve.type === 'warning') {
+                toast(resolve.message, { type: resolve.type, theme: 'dark' })
+                setMessage(resolve.message);
+            } else {
+                setStores(resolve)
+                setLoading(false)
+            }
+        }).catch(error => {
+            toast('Falha ao se conectar com a API', { theme: 'dark', type: 'error' });
+            setMessage('...Falha ao conectar com o sistema - Reinicie a pagina...');
+        })
+    }, [])
+
+    const handleInputs = (e) => {
+        setUserinfo({ ...userInfo, [e.target.name]: e.target.value })
+    }
+
+    const handleSubmit = () => {
+        setLoading(true)
+        login(userInfo.name, userInfo.password, userInfo.store, adminCheck).then(resolve => {
+            if (resolve.type) {
+                toast(resolve.message, { type: resolve.type, theme: 'dark' })
+            }
+            if (resolve.infos.token) {
+                store.dispatch({
+                    'type': 'authenticated',
+                    'state': {
+                        user: resolve.infos.user,
+                        store: resolve.infos.store,
+                        type: resolve.infos.type,
+                        token: resolve.infos.token,
+                        id: resolve.infos.id,
+                        authenticated: true
+                    }
+                })
+                window.location.reload()
+            }
+            setLoading(false)
+        }).catch(reject => {
+            setLoading(false)
+        })
+    }
+    
+    const handleCheckAdmin = ()=>{
+        setAdminCheck(!adminCheck);
+        setDisableCheck(!disableCheck);
+    }
+
+
+    return (
+        <main className='MainLogin'>
+            {
+                loading
+                    ? <LoadingCnxCtx.Provider value={{ message }}><LoadingCnx /></LoadingCnxCtx.Provider>
+                    : <>
+                        <ToastContainer />
+                        <section className='MainCenter'>
+                            <div className='Logo'>
+                                <img src={whiteLogo} alt="CNX Telecom - Você sempre conectado!" />
+                            </div>
+                            <div className='FormLogin'>
+                                <label className='fontgroup'>Usuário:</label>
+                                <input name='name' onChange={handleInputs} value={userInfo.name} className='inputgroup' spellCheck='false' type="text" />
+                                <label className='fontgroup'>Senha:</label>
+                                <input name='password' onChange={handleInputs} value={userInfo.password} className='inputgroup' spellCheck='false' type='password' />
+                                <Checkbox style={{color:'#fff', margin:'10px'}} onClick={handleCheckAdmin}>Administrador</Checkbox>
+                                <label className='fontgroup' >Selecione a Loja:</label>
+                                <select disabled={disableCheck} onChange={handleInputs} spellCheck='false' name="store" id="selectgroup" value={userInfo.store}>
+                                    <option value=" " defaultChecked></option>
+                                    {
+
+                                        stores.map((item) => {
+                                            return (
+                                                <option className='optiongroup' key={item.id} spellCheck='false' value={item.name}>{item.name}</option>
+                                            )
+                                        })
+
+                                    }
+                                </select>
+                                <button onClick={handleSubmit}>Entrar</button>
+                            </div>
+                        </section>
+                        <label className='Footer'>Desenvolvido por © CNX Telecom</label>
+                    </>
+            }
         </main>
     )
 }
 
-export default Login
+export default Login;

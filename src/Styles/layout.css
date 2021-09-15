@@ -1,0 +1,30 @@
+@font-face {
+    font-family: RegularFont;
+    src: url('../Assets/fonts/RegularFont.woff');
+}
+
+.navigator {
+    background: linear-gradient( 90deg, rgba(255, 119, 59, 1) 0%, rgba(255, 142, 36, 1) 35%, rgba(255, 84, 67, 1) 100%);
+    font-family: RegularFont;
+    display: flex;
+    align-content: space-between;
+}
+
+.content {
+    height: 93.8%;
+    font-family: RegularFont;
+    display: flex;
+    flex-direction: column;
+}
+
+.menunavigate {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.menunavigate>img {
+    margin-left: 10px;
+    width: 100px;
+}

@@ -1,5 +1,10 @@
 import axios from "axios";
 
-const Api = axios.create({baseURL:'http://indoor.lcprojects.net/api/', headers: { 'Content-Type': 'multipart/form-data', 'Accept': '*/*' }})
+const Api = axios.create({
+    baseURL:'http://indoor.lcprojects.net/api',
+    headers: {
+        'Authorization': 'Bearer '+ localStorage.getItem('token')
+    }
+})
 
 export default Api;

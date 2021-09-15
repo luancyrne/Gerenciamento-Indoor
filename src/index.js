@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './styles/css/index.css';
-import RoutersPage from './routers/index'
+import { Provider } from 'react-redux';
+import store from './Store/authStore';
+import RoutesController from './Routes/routes'
 
 ReactDOM.render(
-  <React.StrictMode>
-    <RoutersPage />
-  </React.StrictMode>,
-  document.getElementById('root')
+        <Provider store={store}>
+            <RoutesController />
+        </Provider>,
+    document.getElementById('root')
 );
