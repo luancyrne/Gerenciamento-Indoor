@@ -17,10 +17,16 @@ const Layout = (props)=> {
   const [selection, setSelection] = React.useState(0);
   const navigate = useNavigate();
 
+  const refresh = ()=>{
+    return null
+  }
+
   const handleEditUser = ()=>{
     setSelection(localStorage.getItem('id'))
     setVisibleEdit(true)
   }
+
+
 
   const menu = (
     <Menu>
@@ -38,7 +44,7 @@ const Layout = (props)=> {
 
   return (
     <>
-      <ModalEditUserCtx.Provider value={{ visibleEdit, setVisibleEdit, selection }}>
+      <ModalEditUserCtx.Provider value={{ visibleEdit, setVisibleEdit, selection, refresh}}>
         <ModalEditUser />
       </ModalEditUserCtx.Provider>
       <header className='navigator' style={{ height: '60px' }}>
@@ -57,10 +63,10 @@ const Layout = (props)=> {
             <Menu.Item onClick={() => { navigate('/dashboard') }} key="TVs" icon={<IoTvSharp />}>
               TVs
             </Menu.Item>
-            <Menu.Item key="List" icon={<FaListAlt />}>
+            <Menu.Item key="List" onClick={()=>{navigate('/list')}} icon={<FaListAlt />}>
               Lista de conteúdos
             </Menu.Item>
-            <Menu.Item key="Contents" icon={<AiFillFile />}>
+            <Menu.Item key="Contents" onClick={()=>{navigate('/content')}} icon={<AiFillFile />}>
               Conteúdos
             </Menu.Item>
             {

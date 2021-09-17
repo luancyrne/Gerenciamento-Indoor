@@ -12,7 +12,7 @@ const upScreen = (id, name, link, list_id, rotation, store)=>{
         formData.append('link', link);
     }
     if(list_id){
-        formData.append('list_id', list_id);
+        formData.append('listid', list_id);
     }
     if(rotation){
         formData.append('rotation', rotation);

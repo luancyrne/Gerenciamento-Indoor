@@ -7,7 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { LoadingCnx, LoadingCnxCtx } from '../../Components/LodingCnx';
 import store from "../../Store/authStore";
-import {Checkbox } from 'antd'
+import { Checkbox } from 'antd'
 
 const Login = () => {
     const [stores, setStores] = React.useState([]);
@@ -21,20 +21,22 @@ const Login = () => {
         store: ''
     })
 
-    React.useEffect(() => {
-        getStoreGuest().then(resolve => {
-            if (resolve.type === 'warning') {
-                toast(resolve.message, { type: resolve.type, theme: 'dark' })
-                setMessage(resolve.message);
-            } else {
-                setStores(resolve)
-                setLoading(false)
-            }
-        }).catch(error => {
-            toast('Falha ao se conectar com a API', { theme: 'dark', type: 'error' });
-            setMessage('...Falha ao conectar com o sistema - Reinicie a pagina...');
-        })
+    React.useEffect(()=>{
+        return ()=>setStores(null)
     }, [])
+
+    getStoreGuest().then(resolve => {
+        if (resolve.type === 'warning') {
+            toast(resolve.message, { type: resolve.type, theme: 'dark' })
+            setMessage(resolve.message);
+        } else {
+            setStores(resolve)
+            setLoading(false)
+        }
+    }).catch(error => {
+        toast('Falha ao se conectar com a API', { theme: 'dark', type: 'error' });
+        setMessage('...Falha ao conectar com o sistema - Reinicie a pagina...');
+    })
 
     const handleInputs = (e) => {
         setUserinfo({ ...userInfo, [e.target.name]: e.target.value })
@@ -65,8 +67,8 @@ const Login = () => {
             setLoading(false)
         })
     }
-    
-    const handleCheckAdmin = ()=>{
+
+    const handleCheckAdmin = () => {
         setAdminCheck(!adminCheck);
         setDisableCheck(!disableCheck);
     }
@@ -88,7 +90,7 @@ const Login = () => {
                                 <input name='name' onChange={handleInputs} value={userInfo.name} className='inputgroup' spellCheck='false' type="text" />
                                 <label className='fontgroup'>Senha:</label>
                                 <input name='password' onChange={handleInputs} value={userInfo.password} className='inputgroup' spellCheck='false' type='password' />
-                                <Checkbox style={{color:'#fff', margin:'10px'}} onClick={handleCheckAdmin}>Administrador</Checkbox>
+                                <Checkbox style={{ color: '#fff', margin: '10px' }} onClick={handleCheckAdmin}>Administrador</Checkbox>
                                 <label className='fontgroup' >Selecione a Loja:</label>
                                 <select disabled={disableCheck} onChange={handleInputs} spellCheck='false' name="store" id="selectgroup" value={userInfo.store}>
                                     <option value=" " defaultChecked></option>

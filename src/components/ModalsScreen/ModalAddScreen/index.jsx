@@ -1,8 +1,8 @@
 import React from 'react';
 import { Modal, Input, Space, Select } from 'antd';
 import { FaStoreAlt } from 'react-icons/fa'
-import getStoreGuest from '../../../Services/controller/store/getStoreGuest';
-import getLists from '../../../Services/controller/lists/getLists.js';
+import {getStores} from '../../../Services/controller/store/getStore';
+import {getLists} from '../../../Services/controller/lists/getLists.js';
 import cadScreen from '../../../Services/controller/screens/cadScreen';
 import { toast } from 'react-toastify';
 
@@ -42,7 +42,7 @@ export const ModalAddScreen = () => {
     }
 
     React.useEffect(() => {
-        getStoreGuest().then(items => {
+        getStores().then(items => {
             setStores(items)
         }).catch(err => {
             console.log(err)
@@ -51,6 +51,7 @@ export const ModalAddScreen = () => {
         getLists().then(items => setLists(items)).catch(err => {
             console.log(err)
         })
+        
     }, [visibleAdd])
 
     const handleChangeData = (e) => {
@@ -76,7 +77,7 @@ export const ModalAddScreen = () => {
                             {
                                 lists.map(list => {
                                     return (
-                                        <Option key={list.id} value={list.name}>{list.name}</Option>
+                                        <Option key={list.id} value={list.id}>{list.name}</Option>
                                     )
                                 })
                             }
@@ -84,11 +85,11 @@ export const ModalAddScreen = () => {
                         <label>Selecione a loja que pertence esta tela:</label>
                         <Select name="store" defaultValue={data.store} onChange={(e) => { setData({ ...data, 'store': e }) }} style={{ width: 120 }}>
                             {
-                                stores.map(store => {
+                                localStorage.getItem('type') === 'admin' ? stores.map(store => {
                                     return (
                                         <Option key={store.id} value={store.name}>{store.name}</Option>
                                     )
-                                })
+                                }) : <Option key='0' value={localStorage.getItem('store')}>{localStorage.getItem('store')}</Option>
                             }
                         </Select>
                         <label>Selecione a rotação da tela:</label>

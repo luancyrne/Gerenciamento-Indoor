@@ -1,7 +1,7 @@
 import Api from './api';
 const formData = new FormData()
 
-export const filter = async (filter, search, table) => {
+const filter = async (filter, search, table) => {
 
     let screens;
     let access = localStorage.getItem('type')

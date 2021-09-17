@@ -23,7 +23,6 @@ const login = (name, password, store, adminCheck) => {
 
     return new Promise((resolve, reject) => {
         Api.request(options).then(response => {
-            console.log(response.data)
             resolve(response.data)
         }).catch(err => {
             reject(err)
