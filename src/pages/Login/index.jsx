@@ -41,10 +41,6 @@ export class Login extends React.Component {
         })
     }
 
-    componentWillUnmount() {
-        this.setState({ stores: null })
-    }
-
     handleInputs = (e) => {
         this.setState({ userInfo: { ...this.state.userInfo, [e.target.name]: e.target.value } })
     }
