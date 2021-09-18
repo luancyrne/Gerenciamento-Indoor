@@ -59,6 +59,7 @@ export class ModalEditScreen extends React.Component {
     handleCancel = () => {
         this.context.setVisibleEdit()
         this.context.refresh()
+        this.context.setSelection(null)
     }
 
     handleChangeData = (e) => {

@@ -5,33 +5,34 @@ import delList from "../../../Services/controller/lists/delList";
 
 export const ModalDelListCtx = React.createContext();
 
-export const ModalDelList = () => {
+export class ModalDelList extends React.Component {
+    static contextType = ModalDelListCtx
 
-    const { visible, setVisible, selection, setSelection, refresh } = React.useContext(ModalDelListCtx)
-
-    const handleDelete = () => {
-        delList(selection).then(response => {
+    handleDelete = ()=>{
+        delList(this.context.selection).then(response => {
             toast(response.message, { theme: 'dark', type: response.type })
             if (response.type === 'success') {
-                setVisible(false)
-                setSelection(null)
-                refresh()
+                this.context.setVisible(false)
+                this.context.setSelection(null)
+                this.context.refresh()
             }
         }).catch(err => {
             console.log(err)
         })
     }
 
-    return (
-        <Modal
-            title={`Deseja deletar a lista ${selection}?`}
-            visible={visible}
-            onOk={handleDelete}
-            onCancel={() => { setVisible(false) }}
-            okText="Confirmar"
-            cancelText="Cancelar"
-        >
-            <p>Ao deletar a lista não sera possível restaurar</p>
-        </Modal>
-    )
+    render() {
+        return (
+            <Modal
+                title={`Deseja deletar a lista ${this.context.selection}?`}
+                visible={this.context.visible}
+                onOk={this.handleDelete}
+                onCancel={() => { this.context.setVisible(false) }}
+                okText="Confirmar"
+                cancelText="Cancelar"
+            >
+                <p>Ao deletar a lista não sera possível restaurar</p>
+            </Modal>
+        )
+    }
 }

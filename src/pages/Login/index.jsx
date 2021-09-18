@@ -9,42 +9,49 @@ import { LoadingCnx, LoadingCnxCtx } from '../../Components/LodingCnx';
 import store from "../../Store/authStore";
 import { Checkbox } from 'antd'
 
-const Login = () => {
-    const [stores, setStores] = React.useState([]);
-    const [loading, setLoading] = React.useState(true);
-    const [message, setMessage] = React.useState('');
-    const [adminCheck, setAdminCheck] = React.useState(false);
-    const [disableCheck, setDisableCheck] = React.useState(false)
-    const [userInfo, setUserinfo] = React.useState({
-        name: '',
-        password: '',
-        store: ''
-    })
-
-    React.useEffect(()=>{
-        return ()=>setStores(null)
-    }, [])
-
-    getStoreGuest().then(resolve => {
-        if (resolve.type === 'warning') {
-            toast(resolve.message, { type: resolve.type, theme: 'dark' })
-            setMessage(resolve.message);
-        } else {
-            setStores(resolve)
-            setLoading(false)
+export class Login extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            stores: [],
+            loading: true,
+            message: '',
+            adminCheck: false,
+            disableCheck: false,
+            userInfo: {
+                name: '',
+                password: '',
+                store: ''
+            }
         }
-    }).catch(error => {
-        toast('Falha ao se conectar com a API', { theme: 'dark', type: 'error' });
-        setMessage('...Falha ao conectar com o sistema - Reinicie a pagina...');
-    })
-
-    const handleInputs = (e) => {
-        setUserinfo({ ...userInfo, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = () => {
-        setLoading(true)
-        login(userInfo.name, userInfo.password, userInfo.store, adminCheck).then(resolve => {
+    componentDidMount() {
+        getStoreGuest().then(resolve => {
+            if (resolve.type === 'warning') {
+                toast(resolve.message, { type: resolve.type, theme: 'dark' })
+                this.setState({ message: resolve.message })
+            } else {
+                this.setState({ stores: resolve })
+                this.setState({ loading: false })
+            }
+        }).catch(error => {
+            toast('Falha ao se conectar com a API', { theme: 'dark', type: 'error' });
+            this.setState({ message: '...Falha ao conectar com o sistema - Reinicie a pagina...' })
+        })
+    }
+
+    componentWillUnmount() {
+        this.setState({ stores: null })
+    }
+
+    handleInputs = (e) => {
+        this.setState({ userInfo: { ...this.state.userInfo, [e.target.name]: e.target.value } })
+    }
+
+    handleSubmit = () => {
+        this.setState({ loading: true })
+        login(this.state.userInfo.name, this.state.userInfo.password, this.state.userInfo.store, this.state.adminCheck).then(resolve => {
             if (resolve.type) {
                 toast(resolve.message, { type: resolve.type, theme: 'dark' })
             }
@@ -62,56 +69,57 @@ const Login = () => {
                 })
                 window.location.reload()
             }
-            setLoading(false)
+            this.setState({ loading: false })
         }).catch(reject => {
-            setLoading(false)
+            this.setState({ loading: false })
         })
     }
 
-    const handleCheckAdmin = () => {
-        setAdminCheck(!adminCheck);
-        setDisableCheck(!disableCheck);
+    handleCheckAdmin = () => {
+        this.setState({ adminCheck: !this.state.adminCheck })
+        this.setState({ disableCheck: !this.state.disableCheck })
     }
 
+    render() {
+        return (
+            <main className='MainLogin'>
+                {
+                    this.state.loading
+                        ? <LoadingCnxCtx.Provider value={{ message:this.state.message }}><LoadingCnx /></LoadingCnxCtx.Provider>
+                        : <>
+                            <ToastContainer />
+                            <section className='MainCenter'>
+                                <div className='Logo'>
+                                    <img src={whiteLogo} alt="CNX Telecom - Você sempre conectado!" />
+                                </div>
+                                <div className='FormLogin'>
+                                    <label className='fontgroup'>Usuário:</label>
+                                    <input name='name' onChange={this.handleInputs} value={this.state.userInfo.name} className='inputgroup' spellCheck='false' type="text" />
+                                    <label className='fontgroup'>Senha:</label>
+                                    <input name='password' onChange={this.handleInputs} value={this.state.userInfo.password} className='inputgroup' spellCheck='false' type='password' />
+                                    <Checkbox style={{ color: '#fff', margin: '10px' }} onClick={this.handleCheckAdmin}>Administrador</Checkbox>
+                                    <label className='fontgroup' >Selecione a Loja:</label>
+                                    <select disabled={this.state.disableCheck} onChange={this.handleInputs} spellCheck='false' name="store" id="selectgroup" value={this.state.userInfo.store}>
+                                        <option value=" " defaultChecked></option>
+                                        {
 
-    return (
-        <main className='MainLogin'>
-            {
-                loading
-                    ? <LoadingCnxCtx.Provider value={{ message }}><LoadingCnx /></LoadingCnxCtx.Provider>
-                    : <>
-                        <ToastContainer />
-                        <section className='MainCenter'>
-                            <div className='Logo'>
-                                <img src={whiteLogo} alt="CNX Telecom - Você sempre conectado!" />
-                            </div>
-                            <div className='FormLogin'>
-                                <label className='fontgroup'>Usuário:</label>
-                                <input name='name' onChange={handleInputs} value={userInfo.name} className='inputgroup' spellCheck='false' type="text" />
-                                <label className='fontgroup'>Senha:</label>
-                                <input name='password' onChange={handleInputs} value={userInfo.password} className='inputgroup' spellCheck='false' type='password' />
-                                <Checkbox style={{ color: '#fff', margin: '10px' }} onClick={handleCheckAdmin}>Administrador</Checkbox>
-                                <label className='fontgroup' >Selecione a Loja:</label>
-                                <select disabled={disableCheck} onChange={handleInputs} spellCheck='false' name="store" id="selectgroup" value={userInfo.store}>
-                                    <option value=" " defaultChecked></option>
-                                    {
+                                            this.state.stores.map((item) => {
+                                                return (
+                                                    <option className='optiongroup' key={item.id} spellCheck='false' value={item.name}>{item.name}</option>
+                                                )
+                                            })
 
-                                        stores.map((item) => {
-                                            return (
-                                                <option className='optiongroup' key={item.id} spellCheck='false' value={item.name}>{item.name}</option>
-                                            )
-                                        })
-
-                                    }
-                                </select>
-                                <button onClick={handleSubmit}>Entrar</button>
-                            </div>
-                        </section>
-                        <label className='Footer'>Desenvolvido por © CNX Telecom</label>
-                    </>
-            }
-        </main>
-    )
+                                        }
+                                    </select>
+                                    <button onClick={this.handleSubmit}>Entrar</button>
+                                </div>
+                            </section>
+                            <label className='Footer'>Desenvolvido por © CNX Telecom</label>
+                        </>
+                }
+            </main>
+        )
+    }
 }
 
 export default Login;

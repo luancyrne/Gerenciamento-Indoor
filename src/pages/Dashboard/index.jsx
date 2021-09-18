@@ -146,12 +146,18 @@ class Dashboard extends React.Component {
                         Adicionar tela
                     </Button>
                 </div>
-                <ModalDelScreenCtx.Provider value={{ visible: this.state.visible, setVisible: this.setVisible, selection: this.state.selection, setSelection: this.setSelection, refresh: this.refresh }}>
-                    <ModalDelScreen />
-                </ModalDelScreenCtx.Provider>
-                <ModalAddScreenCtx.Provider value={{ visibleAdd: this.state.visibleAdd, setVisibleAdd: this.setVisibleAdd, refresh: this.refresh }}>
-                    <ModalAddScreen />
-                </ModalAddScreenCtx.Provider>
+                {
+                    this.state.visible ? (<ModalDelScreenCtx.Provider value={{ visible: this.state.visible, setVisible: this.setVisible, selection: this.state.selection, setSelection: this.setSelection, refresh: this.refresh }}>
+                        <ModalDelScreen />
+                    </ModalDelScreenCtx.Provider>) : null
+                }
+
+                {
+                    this.state.visibleAdd ? (<ModalAddScreenCtx.Provider value={{ visibleAdd: this.state.visibleAdd, setVisibleAdd: this.setVisibleAdd, refresh: this.refresh }}>
+                        <ModalAddScreen />
+                    </ModalAddScreenCtx.Provider>) : null
+                }
+
                 {
                     this.state.visibleEdit ? (<ModalEditScreenCtx.Provider value={{ selection: this.state.selection, refresh: this.refresh, visibleEdit: this.state.visibleEdit, setVisibleEdit: this.setVisibleEdit, setSelection: this.setSelection }}>
                         <ModalEditScreen />
