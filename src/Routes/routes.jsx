@@ -7,7 +7,6 @@ import { LoadingCnxCtx, LoadingCnx } from "../Components/LodingCnx";
 import Store from "../Pages/Store";
 import Users from "../Pages/Users";
 import List from '../Pages/List'
-import Content from "../Pages/Content";
 
 const RoutesController = () => {
     const [session, setSession] = React.useState(false)
@@ -30,7 +29,6 @@ const RoutesController = () => {
                 <PrivateRoute path='/stores' element={<Store />}></PrivateRoute>
                 <PrivateRoute path='/users' element={<Users />}></PrivateRoute>
                 <PrivateRoute path='/list' element={<List />}></PrivateRoute>
-                <PrivateRoute path='/content' element={<Content />}></PrivateRoute>
             </Routes>
         </BrowserRouter>
     )

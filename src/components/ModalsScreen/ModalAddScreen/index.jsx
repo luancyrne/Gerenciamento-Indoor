@@ -11,17 +11,17 @@ export const ModalAddScreenCtx = React.createContext()
 const { Option } = Select;
 
 export const ModalAddScreen = () => {
-
-    const { visibleAdd, setVisibleAdd, refresh } = React.useContext(ModalAddScreenCtx);
-    const [stores, setStores] = React.useState([]);
-    const [lists, setLists] = React.useState([]);
-    const [data, setData] = React.useState({
+    const initialState = {
         name: '',
         link: '',
         list_id: '',
         rotation: '',
         store: ''
-    })
+    }
+    const { visibleAdd, setVisibleAdd, refresh } = React.useContext(ModalAddScreenCtx);
+    const [stores, setStores] = React.useState([]);
+    const [lists, setLists] = React.useState([]);
+    const [data, setData] = React.useState(initialState)
 
     const handleAddScreen = () => {
         cadScreen(data.name, data.link, data.list_id, data.rotation, data.store).then(response => {
@@ -29,6 +29,7 @@ export const ModalAddScreen = () => {
             if (response.type === 'success') {
                 setVisibleAdd(false)
                 refresh()
+                setData(initialState)
             }
             
         }).catch(err => {
@@ -52,7 +53,14 @@ export const ModalAddScreen = () => {
             console.log(err)
         })
         
-    }, [visibleAdd])
+        setData({
+            name: '',
+            link: '',
+            list_id: '',
+            rotation: '',
+            store: ''
+        })
+    }, [])
 
     const handleChangeData = (e) => {
         setData({ ...data, [e.target.name]: e.target.value })
@@ -73,7 +81,7 @@ export const ModalAddScreen = () => {
                         <Input onChange={handleChangeData} placeholder="Nome da tela" name='name' value={data.name} prefix={<FaStoreAlt />} />
                         <Input onChange={handleChangeData} value={data.link} name="link" addonBefore={`${window.location.origin}/`} defaultValue="link da tela" />
                         <label>Selecione qual lista de reprodução pertence a esta loja:</label>
-                        <Select onChange={(e) => { setData({ ...data, 'list_id': e }) }} defaultValue={data.list_id} name="list_id" style={{ width: 120 }}>
+                        <Select onChange={(e) => { setData({ ...data, 'list_id': e }) }} defaultValue={data.list_id} value={data.list_id} name="list_id" style={{ width: 120 }}>
                             {
                                 lists.map(list => {
                                     return (
@@ -83,7 +91,7 @@ export const ModalAddScreen = () => {
                             }
                         </Select>
                         <label>Selecione a loja que pertence esta tela:</label>
-                        <Select name="store" defaultValue={data.store} onChange={(e) => { setData({ ...data, 'store': e }) }} style={{ width: 120 }}>
+                        <Select name="store" defaultValue={data.store} value={data.store} onChange={(e) => { setData({ ...data, 'store': e }) }} style={{ width: 120 }}>
                             {
                                 localStorage.getItem('type') === 'admin' ? stores.map(store => {
                                     return (
@@ -93,7 +101,7 @@ export const ModalAddScreen = () => {
                             }
                         </Select>
                         <label>Selecione a rotação da tela:</label>
-                        <Select defaultValue={data.rotation} name="rotation" onChange={(e) => { setData({ ...data, 'rotation': e }) }} style={{ width: 120 }}>
+                        <Select defaultValue={data.rotation} value={data.rotation} name="rotation" onChange={(e) => { setData({ ...data, 'rotation': e }) }} style={{ width: 120 }}>
                             <Option value="horizontal">horizontal</Option>
                             <Option value="vertical">vertical</Option>
                         </Select>

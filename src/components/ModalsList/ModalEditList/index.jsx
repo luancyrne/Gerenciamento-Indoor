@@ -3,27 +3,34 @@ import React from "react";
 import { getStores } from '../../../Services/controller/store/getStore';
 import upList from '../../../Services/controller/lists/upList'
 import { toast } from "react-toastify";
-// import { toast } from "react-toastify";
+import { getList } from '../../../Services/controller/lists/getLists'
 
 const { Option } = Select
 
 export const ModalEditListCtx = React.createContext();
 
 export const ModalEditList = () => {
-
-    const { visibleEdit, setVisibleEdit, selection, setSelection, refresh } = React.useContext(ModalEditListCtx)
-    const [stores, setStores] = React.useState([]);
-    const [data, setData] = React.useState({
+    const initialState = {
         name: '',
         store: ''
-    })
+    }
+    const { visibleEdit, setVisibleEdit, selection, setSelection, refresh } = React.useContext(ModalEditListCtx)
+    const [stores, setStores] = React.useState([]);
+    const [data, setData] = React.useState(initialState)
 
     const handleChangeData = (e) => {
         setData({ ...data, [e.target.name]: e.target.value })
     }
 
 
-
+    getList(selection).then(response => {
+        setData({
+            name: response.name,
+            store: response.store
+        })
+    }).catch(err => {
+        console.log(err)
+    })
 
     React.useEffect(() => {
 
@@ -68,9 +75,9 @@ export const ModalEditList = () => {
             cancelText="Cancelar"
         >
             <Input onChange={handleChangeData} placeholder="Nome da Lista" name='name' value={data.name} allowClear />
-            <div style={{display:'flex', flexDirection:'column'}}>
-                <label style={{marginTop:'10px'}}>Selecione a loja a qual pertence esta lista</label>
-                <Select name="store" defaultValue={data.store} onChange={(e) => { setData({ ...data, 'store': e }) }} style={{ width: 120}}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{ marginTop: '10px' }}>Selecione a loja a qual pertence esta lista</label>
+                <Select name="store" defaultValue={data.store} value={data.store} onChange={(e) => { setData({ ...data, 'store': e }) }} style={{ width: 120 }}>
                     {
                         localStorage.getItem('type') === 'admin' ? stores.map(store => {
                             return (

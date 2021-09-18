@@ -17,106 +17,150 @@ const { Search } = Input;
 const { Option } = Select;
 
 
-const Dashboard = () => {
-    const [screens, setScreens] = React.useState([]);
-    const [selection, setSelection] = React.useState(0);
-    const [visible, setVisible] = React.useState(false);
-    const [visibleAdd, setVisibleAdd] = React.useState(false);
-    const [visibleEdit, setVisibleEdit] = React.useState(false);
-    const [searchParam, setSearchParam] = React.useState('');
-    const [searchType, setSearchType] = React.useState('name');
+class Dashboard extends React.Component {
+    constructor(props) {
+        super(props);
 
-    const refresh = () => {
-        getScreens().then(screens => setScreens(screens)).catch(err => {
+        this.state = {
+            screens: [],
+            selection: 0,
+            visible: false,
+            visibleAdd: false,
+            visibleEdit: false,
+            searchParam: '',
+            searchType: 'name'
+        }
+
+
+    }
+
+    refresh = () => {
+        getScreens().then(screens => this.setScreens(screens)).catch(err => {
             toast('Erro ao acessar telas', { theme: 'dark', type: 'warning' })
         })
     }
 
-    React.useEffect(() => {
-        refresh()
-    }, [])
+    componentDidMount() {
+        this.refresh()
+    }
 
-    const handleDelete = () => {
-        if (selection) {
-            setVisible(true)
+
+    setScreens = (screens) => {
+        this.setState({ screens })
+    }
+
+    setSelection = (selection) => {
+        this.setState({ selection })
+    }
+
+    setVisible = () => {
+        this.setState({ visible: !this.state.visible })
+    }
+
+    setVisibleAdd = () => {
+        this.setState({ visibleAdd: !this.state.visibleAdd })
+    }
+
+
+    setVisibleEdit = () => {
+        this.setState({ visibleEdit: !this.state.visibleEdit })
+    }
+
+    setSearchParam = (searchParam) => {
+        this.setState({ searchParam })
+    }
+
+    setSearchType = (searchType) => {
+        this.setState({ searchType })
+    }
+
+    handleDelete = () => {
+        if (this.state.selection) {
+            this.setVisible()
         } else {
             toast('Selecione uma tela', { theme: 'dark', type: 'info' })
         }
     }
 
-    const handleEdit = () => {
-        if (selection) {
-            setVisibleEdit(true)
+    handleEdit = () => {
+        if (this.state.selection) {
+            this.setVisibleEdit()
         } else {
             toast('Selecione uma tela', { theme: 'dark', type: 'info' })
         }
     }
 
-    const handleSearch = () => {
-        if (searchParam === '') {
-            refresh();
+
+    handleSearch = () => {
+        if (this.state.searchParam === '') {
+            this.refresh();
         } else {
-            filter(searchType, searchParam, 'screens').then(response => {
-                setScreens(response)
+            filter(this.state.searchType, this.state.searchParam, 'screens').then(response => {
+                this.setScreens(response)
             }).catch(err => {
                 console.log(err)
             })
         }
     }
-   
 
+    render() {
+        return (
 
+            <Layout>
+                <ToastContainer />
+                <div id="dashboard" style={{ height: '60px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px' }}>
+                    <div>
+                        <Search placeholder="Digite oque deseja encontrar..." style={{ width: 250 }} onChange={(e) => { this.setSearchParam(e.target.value) }} onSearch={this.handleSearch} enterButton />
+                        <Select defaultValue="name" style={{ width: 120 }} onSelect={(e) => { this.setSearchType(e) }}>
+                            <Option value="name">Tela</Option>
+                            <Option value="rotation">Rotação</Option>
+                            {
+                                localStorage.getItem('type') === 'admin' ? <Option value="store">Loja</Option> : null
+                            }
+                        </Select>
+                    </div>
+                    <div>
 
-    return (
-        <Layout>
-            <ToastContainer />
-            <div style={{ height: '60px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px' }}>
-                <div>
-                    <Search placeholder="Digite oque deseja encontrar..." style={{ width: 250 }} onChange={(e) => { setSearchParam(e.target.value) }} onSearch={handleSearch} enterButton/>
-                    <Select defaultValue="name" style={{ width: 120 }} onSelect={(e) => { setSearchType(e) }}>
-                        <Option value="name">Tela</Option>
-                        <Option value="rotation">Rotação</Option>
-                        {
-                            localStorage.getItem('type') === 'admin' ? <Option value="store">Loja</Option> : null
-                        }
-                    </Select>
+                    </div>
                 </div>
-                <div>
-
+                <DataTable value={this.state.screens} selectionMode="radiobutton" selection={this.state.selection} onSelectionChange={(e) => { this.setSelection(e.value.id) }} dataKey="id">
+                    <Column selectionMode="single" headerStyle={{ width: '3em' }}></Column>
+                    <Column field="id" header="id"></Column>
+                    <Column field="name" sortable header="Tela"></Column>
+                    <Column field="link" header="Link final"></Column>
+                    <Column field="rotation" header="Rotação"></Column>
+                    {
+                        localStorage.getItem('type') === 'admin' ? <Column field="store" sortable header="Loja"></Column> : <Column field="store" header="Loja"></Column>
+                    }
+                </DataTable>
+                <div style={{ margin: '10px', display: 'flex', justifyContent: 'space-between' }}>
+                    <Button type='primary' danger onClick={this.handleDelete}>
+                        Deletar Tela
+                    </Button>
+                    <Button type='primary' onClick={this.handleEdit}>
+                        Editar Tela
+                    </Button>
+                    <Button type='primary' onClick={() => {
+                        this.setVisibleAdd()
+                    }}>
+                        Adicionar tela
+                    </Button>
                 </div>
-            </div>
-            <DataTable value={screens} selectionMode="radiobutton" selection={selection} onSelectionChange={(e) => setSelection(e.value.id)} dataKey="id">
-                <Column selectionMode="single" headerStyle={{ width: '3em' }}></Column>
-                <Column field="id"  header="id"></Column>
-                <Column field="name" sortable  header="Tela"></Column>
-                <Column field="link"  header="Link final"></Column>
-                <Column field="rotation" header="Rotação"></Column>
+                <ModalDelScreenCtx.Provider value={{ visible: this.state.visible, setVisible: this.setVisible, selection: this.state.selection, setSelection: this.setSelection, refresh: this.refresh }}>
+                    <ModalDelScreen />
+                </ModalDelScreenCtx.Provider>
+                <ModalAddScreenCtx.Provider value={{ visibleAdd: this.state.visibleAdd, setVisibleAdd: this.setVisibleAdd, refresh: this.refresh }}>
+                    <ModalAddScreen />
+                </ModalAddScreenCtx.Provider>
                 {
-                    localStorage.getItem('type') === 'admin' ? <Column field="store" sortable header="Loja"></Column> : <Column field="store" header="Loja"></Column>
+                    this.state.visibleEdit ? (<ModalEditScreenCtx.Provider value={{ selection: this.state.selection, refresh: this.refresh, visibleEdit: this.state.visibleEdit, setVisibleEdit: this.setVisibleEdit, setSelection: this.setSelection }}>
+                        <ModalEditScreen />
+                    </ModalEditScreenCtx.Provider>) : null
                 }
-            </DataTable>
-            <div style={{ margin: '10px', display: 'flex', justifyContent: 'space-between' }}>
-                <Button type='primary' danger onClick={handleDelete}>
-                    Deletar Tela
-                </Button>
-                <Button type='primary' onClick={handleEdit}>
-                    Editar Tela
-                </Button>
-                <Button type='primary' onClick={() => setVisibleAdd(true)}>
-                    Adicionar tela
-                </Button>
-            </div>
-            <ModalDelScreenCtx.Provider value={{ visible, setVisible, selection, setSelection, refresh }}>
-                <ModalDelScreen />
-            </ModalDelScreenCtx.Provider>
-            <ModalAddScreenCtx.Provider value={{ visibleAdd, setVisibleAdd, refresh }}>
-                <ModalAddScreen />
-            </ModalAddScreenCtx.Provider>
-            <ModalEditScreenCtx.Provider value={{ selection, refresh, visibleEdit, setVisibleEdit, setSelection }}>
-                <ModalEditScreen />
-            </ModalEditScreenCtx.Provider>
-        </Layout>
-    )
+            </Layout>
+        )
+    }
 }
+
 
 export default Dashboard;

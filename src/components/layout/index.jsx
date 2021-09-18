@@ -66,9 +66,6 @@ const Layout = (props)=> {
             <Menu.Item key="List" onClick={()=>{navigate('/list')}} icon={<FaListAlt />}>
               Lista de conteúdos
             </Menu.Item>
-            <Menu.Item key="Contents" onClick={()=>{navigate('/content')}} icon={<AiFillFile />}>
-              Conteúdos
-            </Menu.Item>
             {
               localStorage.getItem('type') === 'admin' ? <SubMenu key="Tools" icon={<IoSettings />} title="Ferramentas">
                 <Menu.Item key="users" onClick={()=>navigate('/users')} icon={<FaUsers />}>Usuários</Menu.Item>

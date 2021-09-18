@@ -5,35 +5,40 @@ import { toast } from 'react-toastify';
 
 export const ModalDelScreenCtx = React.createContext()
 
-export const ModalDelScreen = () => {
-    const { visible, setVisible, selection, setSelection, refresh } = React.useContext(ModalDelScreenCtx);
-
-    const handleDeleteScreen = () => {
-        delScreen(selection).then(response => {
+export class ModalDelScreen extends React.Component {
+    static contextType = ModalDelScreenCtx
+    
+    handleDeleteScreen = () => {
+        delScreen(this.context.selection).then(response => {
             toast(response.message, { theme: 'dark', type: response.type })
-            refresh()
-            setSelection(null)
-            setVisible(false)
+            this.context.refresh()
+            this.context.setSelection(null)
+            this.context.setVisible()
         })
     }
 
-    const handleCancel = () => {
-        setVisible(false)
-        setSelection(null)
+    handleCancel = () => {
+        this.context.setVisible(false)
+        this.context.setSelection(null)
     }
 
-    return (
-        <>
+
+    render() {
+        return (
+            
             <Modal
-                title={`Tem certeza que deja deletar a tela ${selection} ?`}
-                visible={visible}
-                onOk={handleDeleteScreen}
-                onCancel={handleCancel}
+                title={`Tem certeza que deja deletar a tela ${this.context.selection} ?`}
+                visible={this.context.visible}
+                onOk={this.handleDeleteScreen}
+                onCancel={this.handleCancel}
                 okText="Confirmar"
                 cancelText="Cancelar"
             >
+
                 <p>Ao deletar a tela não sera possível restaurar</p>
             </Modal>
-        </>
-    )
+
+        )
+    }
+
 }
