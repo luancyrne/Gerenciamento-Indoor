@@ -222,7 +222,7 @@ class List extends React.Component {
                     </ModalAddContentCtx.Provider>) : null
                 }
                 {
-                    this.state.visibleDelContent ? (<ModalDelContentCtx.Provider value={{ visibleDelContent: this.state.visibleDelContent, setVisibleDelContent: this.setVisibleDelContent, accordionSelect: this.refreshContents, contentIdSelection: this.state.contentIdSelection }}>
+                    this.state.visibleDelContent ? (<ModalDelContentCtx.Provider value={{ visibleDelContent: this.state.visibleDelContent, setVisibleDelContent: this.setVisibleDelContent, refreshContents: this.refreshContents, contentIdSelection: this.state.contentIdSelection, list: this.state.accordionSelect }}>
                         <ModalDelContent />
                     </ModalDelContentCtx.Provider>) : null
                 }

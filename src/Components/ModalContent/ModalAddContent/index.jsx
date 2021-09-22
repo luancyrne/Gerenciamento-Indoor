@@ -25,7 +25,6 @@ export class ModalAddContent extends React.Component {
             this.setState({ loading: !this.state.loading })
             if(response.type === 'success'){
                 this.context.setVisibleAddContent()
-                this.context.accordionSelect()
             }
         }).catch(err => {
             console.log(err)
