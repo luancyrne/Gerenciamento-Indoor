@@ -6,80 +6,86 @@ import { toast } from "react-toastify";
 
 export const ModalAddUserCtx = React.createContext();
 
-export const ModalAddUser = () => {
-
-    const { visibleAdd, setVisibleAdd, refresh } = React.useContext(ModalAddUserCtx)
-    const [stores, setStores] = React.useState([]);
-    const [data, setData] = React.useState({
-        name: '',
-        password: '',
-        store: '',
-        type: ''
-    })
-
-    const handleData = (e) => {
-        setData({ ...data, [e.target.name]: e.target.value })
+export class ModalAddUser extends React.Component {
+    static contextType = ModalAddUserCtx
+    constructor(props) {
+        super(props)
+        this.state = {
+            stores: [],
+            data: {
+                name: '',
+                password: '',
+                store: '',
+                type: ''
+            }
+        }
     }
 
-    const handleType = (e) => {
-        setData({ ...data, type: e })
+    handleData = (e) => {
+        this.setState({data:{...this.state.data, [e.target.name]: e.target.value}})
     }
 
-    const handleStore = (e) => {
-        setData({ ...data, store: e })
+    handleType = (e) => {
+        this.setState({data:{...this.state.data, type:e}})
     }
 
-    React.useEffect(() => {
+    handleStore = (e) => {
+        this.setState({data:{...this.state.data, store:e}})
+    }
+
+    componentDidMount() {
         getStores().then(response => {
-            setStores(response)
+            this.setState({stores:response})
         }).catch(err => console.log(err))
-    }, [])
+    }
 
-    const handleCadUser = () => {
-        cadUser(data.name, data.password, data.store, data.type).then(response => {
+    handleCadUser = () => {
+        cadUser(this.state.data.name, this.state.data.password, this.state.data.store, this.state.data.type).then(response => {
             toast(response.message, { theme: 'dark', type: response.type })
             if (response.type === 'success') {
-                setVisibleAdd(false)
-                refresh()
+                this.context.setVisibleAdd()
+                this.context.refresh()
             }
-        }).catch(err=>{console.log(err)})
+        }).catch(err => { console.log(err) })
     }
 
-    return (
-        <Modal
-            visible={visibleAdd}
-            onCancel={() => {
-                setVisibleAdd(false)
-                refresh()
-            }}
-            title="Adicionar usuário"
-            cancelText="Cancelar"
-            okText="Confirmar"
-            onOk={handleCadUser}
-        >
-            <Input style={{ marginTop: '10px' }} placeholder="Nome" name="name" onChange={handleData}></Input>
-            <Input.Password style={{ marginTop: '10px' }} placeholder="Senha" name="password" onChange={handleData}></Input.Password>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', flexDirection: "column", marginTop: "10px" }}>
-                    <label>Selecione o tipo do perfil:</label>
-                    <Select style={{ width: '100px', marginTop: '10px' }} onChange={handleType}>
-                        <Select.Option key="1" value="admin">Admin</Select.Option>
-                        <Select.Option key="2" value="user">Usuário</Select.Option>
-                    </Select>
+    render() {
+        return (
+            <Modal
+                visible={this.context.visibleAdd}
+                onCancel={() => {
+                    this.context.setVisibleAdd(false)
+                    this.context.refresh()
+                }}
+                title="Adicionar usuário"
+                cancelText="Cancelar"
+                okText="Confirmar"
+                onOk={this.handleCadUser}
+            >
+                <Input style={{ marginTop: '10px' }} placeholder="Nome" name="name" onChange={this.handleData}></Input>
+                <Input.Password style={{ marginTop: '10px' }} placeholder="Senha" name="password" onChange={this.handleData}></Input.Password>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', flexDirection: "column", marginTop: "10px" }}>
+                        <label>Selecione o tipo do perfil:</label>
+                        <Select style={{ width: '100px', marginTop: '10px' }} onChange={this.handleType}>
+                            <Select.Option key="1" value="admin">Admin</Select.Option>
+                            <Select.Option key="2" value="user">Usuário</Select.Option>
+                        </Select>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: "column" }}>
+                        <label>Selecione a loja:</label>
+                        <Select style={{ width: '100px', marginTop: '10px' }} onSelect={this.handleStore}>
+                            {
+                                this.state.stores.map(item => {
+                                    return (
+                                        <Select.Option key={item.id} value={item.name}>{item.name}</Select.Option>
+                                    )
+                                })
+                            }
+                        </Select>
+                    </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: "column" }}>
-                    <label>Selecione a loja:</label>
-                    <Select style={{ width: '100px', marginTop: '10px' }} onSelect={handleStore}>
-                        {
-                            stores.map(item => {
-                                return (
-                                    <Select.Option key={item.id} value={item.name}>{item.name}</Select.Option>
-                                )
-                            })
-                        }
-                    </Select>
-                </div>
-            </div>
-        </Modal>
-    )
+            </Modal>
+        )
+    }
 }

@@ -1,4 +1,4 @@
-import { Modal, Input, Select } from "antd";
+import { Modal, Input, Select, Spin } from "antd";
 import React from "react";
 import { getStores } from '../../../Services/controller/store/getStore';
 import upList from '../../../Services/controller/lists/upList'
@@ -18,7 +18,8 @@ export class ModalEditList extends React.Component {
             data: {
                 name: '',
                 store: ''
-            }
+            },
+            loading: true
         }
     }
 
@@ -34,6 +35,8 @@ export class ModalEditList extends React.Component {
                     store: response.store
                 }
             })
+
+            this.setState({loading:false})
         }).catch(err => {
             console.log(err)
         })
@@ -78,19 +81,21 @@ export class ModalEditList extends React.Component {
                 okText="Confirmar"
                 cancelText="Cancelar"
             >
-                <Input onChange={this.handleChangeData} placeholder="Nome da Lista" name='name' value={this.state.data.name} allowClear />
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <label style={{ marginTop: '10px' }}>Selecione a loja a qual pertence esta lista</label>
-                    <Select name="store" defaultValue={this.state.data.store} value={this.state.data.store} onChange={(e) => { this.setState({data:{...this.state.data,'store':e}})}} style={{ width: 120 }}>
-                        {
-                            localStorage.getItem('type') === 'admin' ? this.state.stores.map(store => {
-                                return (
-                                    <Option key={store.id} value={store.name}>{store.name}</Option>
-                                )
-                            }) : <Option key='0' value={localStorage.getItem('store')}>{localStorage.getItem('store')}</Option>
-                        }
-                    </Select>
-                </div>
+                <Spin tip="Carregando informações" spinning={this.state.loading}>
+                    <Input onChange={this.handleChangeData} placeholder="Nome da Lista" name='name' value={this.state.data.name} allowClear />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label style={{ marginTop: '10px' }}>Selecione a loja a qual pertence esta lista</label>
+                        <Select name="store" defaultValue={this.state.data.store} value={this.state.data.store} onChange={(e) => { this.setState({ data: { ...this.state.data, 'store': e } }) }} style={{ width: 120 }}>
+                            {
+                                localStorage.getItem('type') === 'admin' ? this.state.stores.map(store => {
+                                    return (
+                                        <Option key={store.id} value={store.name}>{store.name}</Option>
+                                    )
+                                }) : <Option key='0' value={localStorage.getItem('store')}>{localStorage.getItem('store')}</Option>
+                            }
+                        </Select>
+                    </div>
+                </Spin>
             </Modal>
         )
     }

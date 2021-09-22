@@ -6,7 +6,6 @@ import { AiOutlineUser } from 'react-icons/ai/index';
 import 'antd/dist/antd.css';
 import { IoTvSharp, IoSettings } from 'react-icons/io5';
 import { FaListAlt, FaStore, FaUsers } from 'react-icons/fa';
-import { AiFillFile } from 'react-icons/ai';
 import { useNavigate } from 'react-router';
 import { ModalEditUserCtx, ModalEditUser } from '../ModalsUser/ModalEditUser';
 

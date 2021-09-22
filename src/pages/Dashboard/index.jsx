@@ -18,20 +18,15 @@ const { Option } = Select;
 
 
 class Dashboard extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            screens: [],
-            selection: 0,
-            visible: false,
-            visibleAdd: false,
-            visibleEdit: false,
-            searchParam: '',
-            searchType: 'name'
-        }
-
-
+    
+    state = {
+        screens: [],
+        selection: 0,
+        visible: false,
+        visibleAdd: false,
+        visibleEdit: false,
+        searchParam: '',
+        searchType: 'name'
     }
 
     refresh = () => {
@@ -42,6 +37,10 @@ class Dashboard extends React.Component {
 
     componentDidMount() {
         this.refresh()
+    }
+
+    componentWillUnmount(){
+
     }
 
 

@@ -1,17 +1,22 @@
 import React from 'react';
 import Layout from '../../Components/Layout/index';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
 import { getLists } from '../../Services/controller/lists/getLists';
 import { ModalDelListCtx, ModalDelList } from '../../Components/ModalsList/ModalDelList';
 import { ModalEditListCtx, ModalEditList } from '../../Components/ModalsList/ModalEditList';
 import { ModalAddListCtx, ModalAddList } from '../../Components/ModalsList/ModalAddList';
-import { Button, Input, Select } from 'antd';
+import { ModalAddContentCtx, ModalAddContent } from '../../Components/ModalContent/ModalAddContent';
+import { ModalDelContentCtx, ModalDelContent } from '../../Components/ModalContent/ModalDelContent';
+import { Button, Input, Select, Collapse, Checkbox, Tag, Spin } from 'antd';
 import { toast, ToastContainer } from 'react-toastify';
-import filter from '../../Services/filter'
+import filter from '../../Services/filter';
+import getContents from '../../Services/controller/contents/getContents';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+
 
 const { Search } = Input
 const { Option } = Select
+const { Panel } = Collapse;
 
 class List extends React.Component {
     constructor(props) {
@@ -23,7 +28,14 @@ class List extends React.Component {
             visibleEdit: false,
             visibleAdd: false,
             searchParam: '',
-            filterParam: ''
+            filterParam: '',
+            accordionSelect: undefined,
+            contents: [],
+            visibleAddContent: false,
+            loadingContent: false,
+            contentIdSelection: undefined,
+            visibleDelContent: false
+
         }
     }
 
@@ -45,7 +57,7 @@ class List extends React.Component {
         } else {
             this.setState({ visible: true })
         }
-        
+
     }
 
     handleEdit = () => {
@@ -56,16 +68,16 @@ class List extends React.Component {
         }
     }
 
-    setVisible = ()=>{
-        this.setState({visible:!this.state.visible})
+    setVisible = () => {
+        this.setState({ visible: !this.state.visible })
     }
 
-    setVisibleEdit = ()=>{
-        this.setState({visibleEdit:!this.state.visibleEdit})
+    setVisibleEdit = () => {
+        this.setState({ visibleEdit: !this.state.visibleEdit })
     }
 
-    setVisibleAdd = ()=>{
-        this.setState({visibleAdd:!this.state.visibleAdd})
+    setVisibleAdd = () => {
+        this.setState({ visibleAdd: !this.state.visibleAdd })
     }
 
     handleSearch = () => {
@@ -79,6 +91,44 @@ class List extends React.Component {
     setSelect = (e) => {
         this.setState({ selection: e })
     }
+
+    setVisibleAddContent = () => {
+        this.setState({ visibleAddContent: !this.state.visibleAddContent })
+    }
+
+    refreshContents = (accordion) => {
+        getContents(accordion).then(response => {
+            this.setState({ contents: response })
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
+    setAccordionSelect = (accordion) => {
+        this.setState({ accordionSelect: accordion })
+        this.setState({ loadingContent: true })
+        if (accordion) {
+            getContents(accordion).then(response => {
+                this.setState({ contents: response })
+                this.setState({ loadingContent: false })
+            }).catch(err => {
+                console.log(err)
+            })
+        }
+    }
+
+    imageBodyTemplate(rowData) {
+        return <img src={`http://indoor.lcprojects.net/api/uploads/${rowData.link}`} style={{ width: 150 }} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.link} className="product-image" />;
+    }
+
+    setVisibleDelContent = () => {
+        if (this.state.contentIdSelection === undefined || this.state.contentIdSelection === null) {
+            toast('Selecione um conteúdo para deletar', { theme: 'dark', type: 'info' })
+        } else {
+            this.setState({ visibleDelContent: !this.state.visibleDelContent })
+        }
+    }
+
 
     render() {
         return (
@@ -98,12 +148,48 @@ class List extends React.Component {
 
                     </div>
                 </div>
-                <DataTable value={this.state.list} selectionMode="radiobutton" selection={this.state.selection} onSelectionChange={(e) => this.setState({ selection: e.value.id })} dataKey="id">
-                    <Column selectionMode="single" headerStyle={{ width: '3em' }}></Column>
-                    <Column field="id" header="id"></Column>
-                    <Column field="name" sortable header="Lista"></Column>
-                    <Column field="store" sortable header="Loja"></Column>
-                </DataTable>
+                <Collapse
+                    defaultActiveKey={['1']}
+                    expandIconPosition={'right'}
+                    style={{ margin: '10px 0', border: 'solid #fb8a2b36' }}
+                    accordion
+                    onChange={(e) => { this.setAccordionSelect(e) }}
+                >
+                    {
+                        this.state.list.map(item => {
+                            return (
+
+                                <Panel key={item.id} header={(
+                                    <div>
+                                        <Checkbox onChange={(e) => this.setSelect(e.target.value)} checked={this.state.selection === item.id ? true : false} value={item.id} />
+                                        <label style={{ marginLeft: 10 }}>Nome da lista - </label><Tag>{item.name}</Tag><label style={{ marginLeft: 10 }}>Loja - </label><Tag color="#2db7f5">{item.store}</Tag>
+                                    </div>
+                                )}>
+                                    <Spin spinning={this.state.loadingContent} tip="Carregando conteúdos da lista">
+                                        <DataTable value={this.state.contents} onSelectionChange={(e) => this.setState({ contentIdSelection: e.value.id })}>
+                                            <Column selectionMode="single" headerStyle={{ width: '3em' }}></Column>
+                                            <Column field="id" header="id"></Column>
+                                            <Column field="name" header="Name" sortable></Column>
+                                            <Column header="Image" body={this.imageBodyTemplate} />
+                                            <Column field="link" header="Link"></Column>
+                                        </DataTable>
+                                    </Spin>
+                                    <div style={{ margin: '10px', display: 'flex', justifyContent: 'space-between' }}>
+                                        <Button type='primary' danger onClick={this.setVisibleDelContent}>
+                                            Deletar conteúdo
+                                        </Button>
+                                        <Button type='primary' onClick={() => {
+                                            this.setVisibleAddContent()
+                                        }}>
+                                            Adicionar conteúdo
+                                        </Button>
+                                    </div>
+                                </Panel>
+
+                            )
+                        })
+                    }
+                </Collapse>
                 <div style={{ margin: '10px', display: 'flex', justifyContent: 'space-between' }}>
                     <Button type='primary' danger onClick={this.handleDelete}>
                         Deletar Lista
@@ -129,6 +215,16 @@ class List extends React.Component {
                     this.state.visibleAdd ? (<ModalAddListCtx.Provider value={{ visibleAdd: this.state.visibleAdd, setVisibleAdd: this.setVisibleAdd, refresh: this.refresh }}>
                         <ModalAddList />
                     </ModalAddListCtx.Provider>) : null
+                }
+                {
+                    this.state.visibleAddContent ? (<ModalAddContentCtx.Provider value={{ visibleAddContent: this.state.visibleAddContent, setVisibleAddContent: this.setVisibleAddContent, list: this.state.accordionSelect, refresh: this.refresh, accordionSelect: this.setAccordionSelect }}>
+                        <ModalAddContent />
+                    </ModalAddContentCtx.Provider>) : null
+                }
+                {
+                    this.state.visibleDelContent ? (<ModalDelContentCtx.Provider value={{ visibleDelContent: this.state.visibleDelContent, setVisibleDelContent: this.setVisibleDelContent, accordionSelect: this.refreshContents, contentIdSelection: this.state.contentIdSelection }}>
+                        <ModalDelContent />
+                    </ModalDelContentCtx.Provider>) : null
                 }
             </Layout>
         )

@@ -10,35 +10,18 @@ import store from "../../Store/authStore";
 import { Checkbox } from 'antd'
 
 export class Login extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            stores: [],
-            loading: true,
-            message: '',
-            adminCheck: false,
-            disableCheck: false,
-            userInfo: {
-                name: '',
-                password: '',
-                store: ''
-            }
-        }
-    }
 
-    componentDidMount() {
-        getStoreGuest().then(resolve => {
-            if (resolve.type === 'warning') {
-                toast(resolve.message, { type: resolve.type, theme: 'dark' })
-                this.setState({ message: resolve.message })
-            } else {
-                this.setState({ stores: resolve })
-                this.setState({ loading: false })
-            }
-        }).catch(error => {
-            toast('Falha ao se conectar com a API', { theme: 'dark', type: 'error' });
-            this.setState({ message: '...Falha ao conectar com o sistema - Reinicie a pagina...' })
-        })
+    state = {
+        stores: [],
+        loading: true,
+        message: '',
+        adminCheck: false,
+        disableCheck: false,
+        userInfo: {
+            name: '',
+            password: '',
+            store: ''
+        }
     }
 
     handleInputs = (e) => {
@@ -76,12 +59,33 @@ export class Login extends React.Component {
         this.setState({ disableCheck: !this.state.disableCheck })
     }
 
+    componentDidMount() {
+        getStoreGuest().then(resolve => {
+            if (resolve.type === 'warning') {
+                toast(resolve.message, { type: resolve.type, theme: 'dark' })
+                this.setState({ message: resolve.message })
+            } else {
+                this.setState({ stores: resolve })
+                this.setState({ loading: false })
+            }
+        }).catch(error => {
+            toast('Falha ao se conectar com a API', { theme: 'dark', type: 'error' });
+            this.setState({ message: '...Falha ao conectar com o sistema - Reinicie a pagina...' })
+        })
+    }
+
     render() {
+
+
+
+
+
+
         return (
             <main className='MainLogin'>
                 {
                     this.state.loading
-                        ? <LoadingCnxCtx.Provider value={{ message:this.state.message }}><LoadingCnx /></LoadingCnxCtx.Provider>
+                        ? <LoadingCnxCtx.Provider value={{ message: this.state.message }}><LoadingCnx /></LoadingCnxCtx.Provider>
                         : <>
                             <ToastContainer />
                             <section className='MainCenter'>

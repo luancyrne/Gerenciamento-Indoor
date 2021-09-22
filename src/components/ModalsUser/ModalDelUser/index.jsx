@@ -5,30 +5,34 @@ import { toast } from "react-toastify";
 
 export const ModalDelUserCtx = React.createContext();
 
-export const ModalDelUser = () => {
-
-    const { visible, setVisible, selection, setSelection, refresh } = React.useContext(ModalDelUserCtx)
-
-    const handleDeleteUser = () => {
-        delUser(selection).then(response => {
+export class ModalDelUser extends React.Component {
+    static contextType = ModalDelUserCtx
+    
+    handleDeleteUser = () => {
+        delUser(this.context.selection).then(response => {
             toast(response.message, { theme: 'dark', type: response.type })
-            setSelection(null)
-            refresh()
-            setVisible(false)
+            this.context.setSelection(null)
+            this.context.refresh()
+            this.context.setVisible()
         }).catch(err => console.log(err))
     }
 
-    return (
+    componentWillUnmount(){
+        this.context.setSelection(null)
+    }
 
-        <Modal
-            title={`Tem certeza que deja deletar o usuário ${selection} ?`}
-            visible={visible}
-            onOk={handleDeleteUser}
-            onCancel={() => { setVisible(false) }}
-            okText="Confirmar"
-            cancelText="Cancelar"
-        >
-            <p>Ao deletar o usuário não sera possível restaurar</p>
-        </Modal>
-    )
+    render() {
+        return (
+            <Modal
+                title={`Tem certeza que deja deletar o usuário ${this.context.selection} ?`}
+                visible={this.context.visible}
+                onOk={this.handleDeleteUser}
+                onCancel={() => { this.context.setVisible() }}
+                okText="Confirmar"
+                cancelText="Cancelar"
+            >
+                <p>Ao deletar o usuário não sera possível restaurar</p>
+            </Modal>
+        )
+    }
 }
