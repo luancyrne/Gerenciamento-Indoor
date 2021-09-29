@@ -20,15 +20,9 @@ const upScreen = (id, name, link, list_id, list_temp, rotation, store, dateStart
     if (store) {
         formData.append('store', store)
     }
-    if(list_temp){
-        formData.append('list_temp', list_temp)
-    }
-    if(dateStart){
-        formData.append('dateStart', dateStart)
-    }
-    if(dateEnd){
-        formData.append('dateEnd', dateEnd)
-    }
+    formData.append('list_temp', list_temp)
+    formData.append('dateStart', dateStart)
+    formData.append('dateEnd', dateEnd)
 
 
 
@@ -36,7 +30,7 @@ const upScreen = (id, name, link, list_id, list_temp, rotation, store, dateStart
 
     return Api.request({ url: '/controllerScreen/upScreen.php', data: formData, method: 'POST' }).then(response => {
         return response.data
-        
+
     }).catch(err => {
         console.log(err)
     })

@@ -21,11 +21,11 @@ export class ModalEditScreen extends React.Component {
                 name: '',
                 link: '',
                 list_id: '',
-                list_temp:'',
+                list_temp: '',
                 rotation: '',
                 store: '',
-                dateStart:'',
-                dateEnd:''
+                dateStart: '',
+                dateEnd: ''
             },
             stores: [],
             lists: [],
@@ -46,18 +46,40 @@ export class ModalEditScreen extends React.Component {
     }
 
     handleUpScreen = () => {
-        console.log(this.state.data)
-        upScreen(this.context.selection, this.state.data.name, this.state.data.link, this.state.data.list_id, this.state.data.list_temp, this.state.data.rotation, this.state.data.store, this.state.data.dateStart, this.state.data.dateEnd).then(response => {
-            toast(response.message, { theme: 'dark', type: response.type })
-            if (response.type === 'success') {
-                this.context.setVisibleEdit()
-                this.context.setSelection(null)
-                this.context.refresh()
-            }
+        if (this.state.data.list_temp === '' || this.state.data.list_temp === null) {
+            upScreen(this.context.selection, this.state.data.name, this.state.data.link, this.state.data.list_id, '', this.state.data.rotation, this.state.data.store, '', '').then(response => {
+                toast(response.message, { theme: 'dark', type: response.type })
+                if (response.type === 'success') {
+                    this.context.setVisibleEdit()
+                    this.context.setSelection(null)
+                    this.context.refresh()
+                }
 
-        }).catch(err => {
-            console.log(err)
-        })
+            }).catch(err => {
+                console.log(err)
+            })
+        } else {
+            if (this.state.data.dateStart === '' || this.state.data.dateEnd === '') {
+                toast('Informa o periodo que ira durar a campanha', { theme: 'dark', type: 'info' })
+            } else {
+                if (Date.parse(this.state.data.dateStart) > Date.parse(this.state.data.dateEnd)) {
+                    toast('A data de inicio não pode ser maior que a data termino', { theme: 'dark', type: 'warning' })
+                } else {
+                    upScreen(this.context.selection, this.state.data.name, this.state.data.link, this.state.data.list_id, this.state.data.list_temp, this.state.data.rotation, this.state.data.store, this.state.data.dateStart, this.state.data.dateEnd).then(response => {
+                        toast(response.message, { theme: 'dark', type: response.type })
+                        if (response.type === 'success') {
+                            this.context.setVisibleEdit()
+                            this.context.setSelection(null)
+                            this.context.refresh()
+                        }
+
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                }
+            }
+        }
+
     }
 
     handleCancel = () => {
@@ -92,8 +114,8 @@ export class ModalEditScreen extends React.Component {
                 list_temp: response.list_temp,
                 rotation: response.rotation,
                 store: response.store,
-                dateStart:response.dateStart,
-                dateEnd:response.dateEnd
+                dateStart: response.dateStart,
+                dateEnd: response.dateEnd
             })
             this.setState({ spin: false })
         })
@@ -127,7 +149,7 @@ export class ModalEditScreen extends React.Component {
                             <Input onChange={this.handleChangeData} placeholder="Nome da tela" name='name' value={this.state.data.name} prefix={<FaStoreAlt />} />
                             <Input onChange={this.handleChangeData} value={this.state.data.link} name="link" addonBefore={`${window.location.origin}/api/tv.php?view=`} defaultValue={this.state.data.link} />
                             <label>Selecione qual lista de reprodução pertence a esta loja:</label>
-                            <Select onChange={(e) => { this.setData({ ...this.state.data, list_id: e }) }} defaultValue={this.state.data.list_id} value={this.state.data.list_id} name="list_id" style={{ width: 120 }}>
+                            <Select onChange={(e) => { this.setData({ ...this.state.data, list_id: e }) }} defaultValue={this.state.data.list_id} value={this.state.data.list_id} name="list_id" style={{ width: 250 }}>
                                 {
                                     this.state.lists.map(list => {
                                         return (
@@ -148,15 +170,18 @@ export class ModalEditScreen extends React.Component {
                             </Select>
                             <label>Lista temporaria:</label>
                             <label style={{ color: 'red' }}>(Selecione uma lista temporaria caso queira que ela seja reproduzida por um periodo ou deixe em branco)</label>
-                            <Select onChange={(e) => { this.setState({ data: { ...this.state.data, 'list_temp': e } }) }} defaultValue={this.state.data.list_temp} value={this.state.data.list_temp} name="list_temp" style={{ width: 120 }}>
-                                {
-                                    this.state.lists.map(list => {
-                                        return (
-                                            <Option key={list.id} value={list.id}>{list.name}</Option>
-                                        )
-                                    })
-                                }
-                            </Select>
+                            <div>
+                                <Select onChange={(e) => { this.setState({ data: { ...this.state.data, 'list_temp': e } }) }} defaultValue={this.state.data.list_temp} value={this.state.data.list_temp} name="list_temp" style={{ width: 250 }} >
+                                    {
+                                        this.state.lists.map(list => {
+                                            return (
+                                                <Option key={list.id} value={list.id}>{list.name}</Option>
+                                            )
+                                        })
+                                    }
+                                </Select>
+                                <label style={{ marginLeft: '10px', cursor: 'pointer', color: 'red' }} onClick={() => { this.setState({ data: { ...this.state.data, 'list_temp': null } }) }}>Limpar</label>
+                            </div>
                             {
                                 this.state.data.list_temp ? (
                                     <>

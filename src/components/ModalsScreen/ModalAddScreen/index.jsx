@@ -36,16 +36,37 @@ export class ModalAddScreen extends React.Component {
     }
 
     handleAddScreen = () => {
-        cadScreen(this.state.data.name, this.state.data.link, this.state.data.list_id, this.state.data.list_temp, this.state.data.rotation, this.state.data.store, this.state.data.dateStart, this.state.data.dateEnd).then(response => {
-            toast(response.message, { theme: 'dark', type: response.type })
-            if (response.type === 'success') {
-                this.context.setVisibleAdd()
-                this.context.refresh()
-            }
+        if (this.state.data.list_temp === '' || this.state.data.list_temp === null) {
+            cadScreen(this.state.data.name, this.state.data.link, this.state.data.list_id, '', this.state.data.rotation, this.state.data.store, '', '').then(response => {
+                toast(response.message, { theme: 'dark', type: response.type })
+                if (response.type === 'success') {
+                    this.context.setVisibleAdd()
+                    this.context.refresh()
+                }
 
-        }).catch(err => {
-            console.log(err)
-        })
+            }).catch(err => {
+                console.log(err)
+            })
+        } else {
+            if (this.state.data.dateStart === '' || this.state.data.dateEnd === '') {
+                toast('Informa o periodo que ira durar a campanha', { theme: 'dark', type: 'info' })
+            } else {
+                if (Date.parse(this.state.data.dateStart) > Date.parse(this.state.data.dateEnd)) {
+                    toast('A data de inicio não pode ser maior que a data termino', { theme: 'dark', type: 'warning' })
+                } else {
+                    cadScreen(this.state.data.name, this.state.data.link, this.state.data.list_id, this.state.data.list_temp, this.state.data.rotation, this.state.data.store, this.state.data.dateStart, this.state.data.dateEnd).then(response => {
+                        toast(response.message, { theme: 'dark', type: response.type })
+                        if (response.type === 'success') {
+                            this.context.setVisibleAdd()
+                            this.context.refresh()
+                        }
+
+                    }).catch(err => {
+                        console.log(err)
+                    })
+                }
+            }
+        }
     }
 
     handleChangeData = (e) => {
@@ -91,7 +112,7 @@ export class ModalAddScreen extends React.Component {
                         <Input onChange={this.handleChangeData} placeholder="Nome da tela" name='name' value={this.state.data.name} prefix={<FaStoreAlt />} />
                         <Input onChange={this.handleChangeData} value={this.state.data.link} name="link" addonBefore={`${window.location.origin}/api/tv.php?view=`} defaultValue="link da tela" />
                         <label>Selecione qual lista de reprodução pertence a esta loja:</label>
-                        <Select onChange={(e) => { this.setState({ data: { ...this.state.data, 'list_id': e } }) }} defaultValue={this.state.data.list_id} value={this.state.data.list_id} name="list_id" style={{ width: 120 }}>
+                        <Select onChange={(e) => { this.setState({ data: { ...this.state.data, 'list_id': e } }) }} defaultValue={this.state.data.list_id} value={this.state.data.list_id} name="list_id" style={{ width: 250 }}>
                             {
                                 this.state.lists.map(list => {
                                     return (
@@ -112,7 +133,8 @@ export class ModalAddScreen extends React.Component {
                         </Select>
                         <label>Lista temporaria:</label>
                         <label style={{ color: 'red' }}>(Selecione uma lista temporaria caso queira que ela seja reproduzida por um periodo ou deixe em branco)</label>
-                        <Select onChange={(e) => { this.setState({ data: { ...this.state.data, 'list_temp': e } }) }} defaultValue={this.state.data.list_temp} value={this.state.data.list_temp} name="list_temp" style={{ width: 120 }}>
+                        <div>
+                        <Select onChange={(e) => { this.setState({ data: { ...this.state.data, 'list_temp': e } }) }} defaultValue={this.state.data.list_temp} value={this.state.data.list_temp} name="list_temp" style={{ width: 250 }}>
                             {
                                 this.state.lists.map(list => {
                                     return (
@@ -121,6 +143,8 @@ export class ModalAddScreen extends React.Component {
                                 })
                             }
                         </Select>
+                        <label style={{marginLeft:'10px', cursor:'pointer', color:'red'}} onClick={()=>{this.setState({ data: { ...this.state.data, 'list_temp': null } })}}>Limpar</label>
+                        </div>
                         {
                             this.state.data.list_temp ? (
                                 <>

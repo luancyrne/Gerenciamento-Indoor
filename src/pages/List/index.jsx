@@ -118,7 +118,7 @@ class List extends React.Component {
     }
 
     imageBodyTemplate(rowData) {
-        return <img src={`http://${window.location.host}``/api/uploads/${rowData.link}`} style={{ width: 150 }} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.link} className="product-image" />;
+        return <img src={`http://${window.location.host}/api/uploads/${rowData.link}`} style={{ width: 150 }} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.link} className="product-image" />;
     }
 
     linktemplate(rowData){
