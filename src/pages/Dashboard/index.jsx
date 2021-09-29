@@ -6,7 +6,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import 'primereact/resources/themes/saga-blue/theme.css'
 import 'primereact/resources/primereact.min.css';
-import { Button, Input, Select } from 'antd';
+import { Button, Input, Select, Checkbox } from 'antd';
 import { ModalDelScreen, ModalDelScreenCtx } from '../../Components/ModalsScreen/ModelDelScreen';
 import { ModalAddScreen, ModalAddScreenCtx } from '../../Components/ModalsScreen/ModalAddScreen/index';
 import { ModalEditScreen, ModalEditScreenCtx } from '../../Components/ModalsScreen/ModalEditScreen/index';
@@ -21,7 +21,7 @@ class Dashboard extends React.Component {
     
     state = {
         screens: [],
-        selection: 0,
+        selection: null,
         visible: false,
         visibleAdd: false,
         visibleEdit: false,
@@ -37,10 +37,6 @@ class Dashboard extends React.Component {
 
     componentDidMount() {
         this.refresh()
-    }
-
-    componentWillUnmount(){
-
     }
 
 
@@ -102,6 +98,16 @@ class Dashboard extends React.Component {
         }
     }
 
+    linktemplate = (rowData)=>{
+        return (
+            <a href={`http://${window.location.host}/api/tv.php?view=${rowData.link}`}>{rowData.link}</a>
+        )
+    }
+
+    checkboxTable = (rowData)=>{
+        return <Checkbox onChange={(e) => this.setSelection(e.target.value)} checked={this.state.selection === rowData.id ? true : false} value={rowData.id} />
+    }
+
     render() {
         return (
 
@@ -122,11 +128,11 @@ class Dashboard extends React.Component {
 
                     </div>
                 </div>
-                <DataTable value={this.state.screens} selectionMode="radiobutton" selection={this.state.selection} onSelectionChange={(e) => { this.setSelection(e.value.id) }} dataKey="id">
-                    <Column selectionMode="single" headerStyle={{ width: '3em' }}></Column>
+                <DataTable value={this.state.screens} dataKey="id">
+                    <Column field="id" headerStyle={{ width: '3em' }} body={this.checkboxTable}></Column>
                     <Column field="id" header="id"></Column>
                     <Column field="name" sortable header="Tela"></Column>
-                    <Column field="link" header="Link final"></Column>
+                    <Column field="link" header="Link" body={this.linktemplate}></Column>
                     <Column field="rotation" header="Rotação"></Column>
                     {
                         localStorage.getItem('type') === 'admin' ? <Column field="store" sortable header="Loja"></Column> : <Column field="store" header="Loja"></Column>

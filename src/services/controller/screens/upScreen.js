@@ -1,7 +1,7 @@
 import Api from "../../api";
 const formData = new FormData()
 
-const upScreen = (id, name, link, list_id, rotation, store) => {
+const upScreen = (id, name, link, list_id, list_temp, rotation, store, dateStart, dateEnd) => {
     if (id) {
         formData.append('id', id);
     }
@@ -19,6 +19,15 @@ const upScreen = (id, name, link, list_id, rotation, store) => {
     }
     if (store) {
         formData.append('store', store)
+    }
+    if(list_temp){
+        formData.append('list_temp', list_temp)
+    }
+    if(dateStart){
+        formData.append('dateStart', dateStart)
+    }
+    if(dateEnd){
+        formData.append('dateEnd', dateEnd)
     }
 
 

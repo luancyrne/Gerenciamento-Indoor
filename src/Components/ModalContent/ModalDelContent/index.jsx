@@ -13,7 +13,7 @@ export class ModalDelContent extends React.Component{
             toast(response.message, {theme:'dark', type:response.type})
             if(response.type === 'success'){
                 this.context.setVisibleDelContent()
-                this.context.accordionSelect()
+                this.context.refreshContents(this.context.list)
             }
         }).catch(err=>{
             console.log(err)

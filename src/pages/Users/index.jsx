@@ -3,7 +3,7 @@ import Layout from '../../Components/Layout/index';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { getUsers } from '../../Services/controller/users/getUser';
-import { Button, Input } from 'antd';
+import { Button, Input, Checkbox } from 'antd';
 import { ModalDelUserCtx, ModalDelUser } from '../../Components/ModalsUser/ModalDelUser';
 import { ModalEditUserCtx, ModalEditUser } from '../../Components/ModalsUser/ModalEditUser';
 import { ModalAddUserCtx, ModalAddUser } from '../../Components/ModalsUser/ModelAddUser';
@@ -75,6 +75,10 @@ export class Users extends React.Component {
         this.setState({ selection: param })
     }
 
+    checkboxUser = (rowData)=>{
+        return <Checkbox onChange={(e) => this.setState({selection: e.target.value})} checked={this.state.selection === rowData.id ? true : false} value={rowData.id} />
+    }
+
     render() {
         return (
             <Layout>
@@ -87,8 +91,8 @@ export class Users extends React.Component {
 
                     </div>
                 </div>
-                <DataTable value={this.state.users} selectionMode="radiobutton" selection={this.state.selection} onSelectionChange={(e) => this.setState({ selection: e.value.id })} dataKey="id">
-                    <Column selectionMode="single" headerStyle={{ width: '3em' }}></Column>
+                <DataTable value={this.state.users} dataKey="id">
+                    <Column field="id" headerStyle={{ width: '3em' }} body={this.checkboxUser}></Column>
                     <Column field="id" header="id"></Column>
                     <Column field="name" sortable header="Nome"></Column>
                     <Column field="store" sortable header="Loja"></Column>

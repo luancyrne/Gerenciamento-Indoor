@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Input, Space, Select, Spin } from 'antd';
+import { Modal, Input, Space, Select, Spin, DatePicker } from 'antd';
 import { FaStoreAlt } from 'react-icons/fa'
 import { getLists } from '../../../Services/controller/lists/getLists.js';
 import upScreen from '../../../Services/controller/screens/upScreen';
@@ -21,8 +21,11 @@ export class ModalEditScreen extends React.Component {
                 name: '',
                 link: '',
                 list_id: '',
+                list_temp:'',
                 rotation: '',
-                store: ''
+                store: '',
+                dateStart:'',
+                dateEnd:''
             },
             stores: [],
             lists: [],
@@ -43,7 +46,8 @@ export class ModalEditScreen extends React.Component {
     }
 
     handleUpScreen = () => {
-        upScreen(this.context.selection, this.state.data.name, this.state.data.link, this.state.data.list_id, this.state.data.rotation, this.state.data.store).then(response => {
+        console.log(this.state.data)
+        upScreen(this.context.selection, this.state.data.name, this.state.data.link, this.state.data.list_id, this.state.data.list_temp, this.state.data.rotation, this.state.data.store, this.state.data.dateStart, this.state.data.dateEnd).then(response => {
             toast(response.message, { theme: 'dark', type: response.type })
             if (response.type === 'success') {
                 this.context.setVisibleEdit()
@@ -85,10 +89,13 @@ export class ModalEditScreen extends React.Component {
                 name: response.name,
                 link: response.link,
                 list_id: response.list_id,
+                list_temp: response.list_temp,
                 rotation: response.rotation,
-                store: response.store
+                store: response.store,
+                dateStart:response.dateStart,
+                dateEnd:response.dateEnd
             })
-            this.setState({spin:false})
+            this.setState({ spin: false })
         })
     }
 
@@ -118,7 +125,7 @@ export class ModalEditScreen extends React.Component {
                     <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center' }}>
                         <Space direction="vertical">
                             <Input onChange={this.handleChangeData} placeholder="Nome da tela" name='name' value={this.state.data.name} prefix={<FaStoreAlt />} />
-                            <Input onChange={this.handleChangeData} value={this.state.data.link} name="link" addonBefore={`${window.location.origin}/`} defaultValue={this.state.data.link} />
+                            <Input onChange={this.handleChangeData} value={this.state.data.link} name="link" addonBefore={`${window.location.origin}/api/tv.php?view=`} defaultValue={this.state.data.link} />
                             <label>Selecione qual lista de reprodução pertence a esta loja:</label>
                             <Select onChange={(e) => { this.setData({ ...this.state.data, list_id: e }) }} defaultValue={this.state.data.list_id} value={this.state.data.list_id} name="list_id" style={{ width: 120 }}>
                                 {
@@ -139,6 +146,33 @@ export class ModalEditScreen extends React.Component {
                                     }) : <Option key='0' value={localStorage.getItem('store')}>{localStorage.getItem('store')}</Option>
                                 }
                             </Select>
+                            <label>Lista temporaria:</label>
+                            <label style={{ color: 'red' }}>(Selecione uma lista temporaria caso queira que ela seja reproduzida por um periodo ou deixe em branco)</label>
+                            <Select onChange={(e) => { this.setState({ data: { ...this.state.data, 'list_temp': e } }) }} defaultValue={this.state.data.list_temp} value={this.state.data.list_temp} name="list_temp" style={{ width: 120 }}>
+                                {
+                                    this.state.lists.map(list => {
+                                        return (
+                                            <Option key={list.id} value={list.id}>{list.name}</Option>
+                                        )
+                                    })
+                                }
+                            </Select>
+                            {
+                                this.state.data.list_temp ? (
+                                    <>
+                                        <label>Selecione o periodo que sera reproduzido:</label>
+                                        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
+                                            <label>Data inicial</label>
+                                            <DatePicker onChange={(e) => {
+                                                this.setState({ data: { ...this.state.data, 'dateStart': e.format('YYYY-MM-DD') } })
+                                            }} ></DatePicker>
+                                            <label>Data Final</label>
+                                            <DatePicker onChange={(e) => {
+                                                this.setState({ data: { ...this.state.data, 'dateEnd': e.format('YYYY-MM-DD') } })
+                                            }}></DatePicker>
+                                        </div>
+                                    </>) : null
+                            }
                             <label>Selecione a rotação da tela:</label>
                             <Select defaultValue={this.state.data.rotation} value={this.state.data.rotation} name="rotation" onChange={(e) => { this.setData({ ...this.state.data, 'rotation': e }) }} style={{ width: 120 }}>
                                 <Option value="horizontal">horizontal</Option>

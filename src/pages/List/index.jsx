@@ -118,7 +118,11 @@ class List extends React.Component {
     }
 
     imageBodyTemplate(rowData) {
-        return <img src={`http://indoor.lcprojects.net/api/uploads/${rowData.link}`} style={{ width: 150 }} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.link} className="product-image" />;
+        return <img src={`http://${window.location.host}``/api/uploads/${rowData.link}`} style={{ width: 150 }} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.link} className="product-image" />;
+    }
+
+    linktemplate(rowData){
+        return (<a href={`http://${window.location.host}/api/uploads/${rowData.link}`}>Visualizar</a>)
     }
 
     setVisibleDelContent = () => {
@@ -129,6 +133,9 @@ class List extends React.Component {
         }
     }
 
+    checkboxContent = (rowData)=>{
+        return <Checkbox onChange={(e) => this.setState({contentIdSelection: e.target.value})} checked={this.state.contentIdSelection === rowData.id ? true : false} value={rowData.id} />
+    }
 
     render() {
         return (
@@ -166,12 +173,12 @@ class List extends React.Component {
                                     </div>
                                 )}>
                                     <Spin spinning={this.state.loadingContent} tip="Carregando conteúdos da lista">
-                                        <DataTable value={this.state.contents} onSelectionChange={(e) => this.setState({ contentIdSelection: e.value.id })}>
-                                            <Column selectionMode="single" headerStyle={{ width: '3em' }}></Column>
+                                        <DataTable value={this.state.contents} >
+                                            <Column field="id" headerStyle={{ width: '3em' }} body={this.checkboxContent}></Column>
                                             <Column field="id" header="id"></Column>
                                             <Column field="name" header="Name" sortable></Column>
-                                            <Column header="Image" body={this.imageBodyTemplate} />
-                                            <Column field="link" header="Link"></Column>
+                                            <Column header="Previa" body={this.imageBodyTemplate} />
+                                            <Column field="link" header="Link" body={this.linktemplate}></Column>
                                         </DataTable>
                                     </Spin>
                                     <div style={{ margin: '10px', display: 'flex', justifyContent: 'space-between' }}>
@@ -217,7 +224,7 @@ class List extends React.Component {
                     </ModalAddListCtx.Provider>) : null
                 }
                 {
-                    this.state.visibleAddContent ? (<ModalAddContentCtx.Provider value={{ visibleAddContent: this.state.visibleAddContent, setVisibleAddContent: this.setVisibleAddContent, list: this.state.accordionSelect, refresh: this.refresh, accordionSelect: this.setAccordionSelect }}>
+                    this.state.visibleAddContent ? (<ModalAddContentCtx.Provider value={{ visibleAddContent: this.state.visibleAddContent, setVisibleAddContent: this.setVisibleAddContent, list: this.state.accordionSelect, refresh: this.refresh, refreshContents: this.refreshContents }}>
                         <ModalAddContent />
                     </ModalAddContentCtx.Provider>) : null
                 }
