@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const Api = axios.create({
-    baseURL:'http://indoor.cnxtv.com.br/api',
+    baseURL:'http://localhost/api',
     headers: {
         'Authorization': 'Bearer '+ localStorage.getItem('token')
     }

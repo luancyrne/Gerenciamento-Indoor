@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../Pages/Login';
 import Dashboard from "../Pages/Dashboard";
 import Api from "../Services/api";
-import { LoadingCnxCtx, LoadingCnx } from "../Components/LodingCnx";
+import { LoadingGriCtx, LoadingGri } from "../Components/LodingGri";
 import Store from "../Pages/Store";
 import Users from "../Pages/Users";
 import List from '../Pages/List'
@@ -17,7 +17,7 @@ const RoutesController = () => {
         setloading(false)
     })
     const PrivateRoute = (props) => {
-        return (<>{loading ? <LoadingCnxCtx.Provider value={{ message }}><LoadingCnx /></LoadingCnxCtx.Provider> : <Route path={props.path} element={session ? props.element : <Navigate to="/login" />}></Route>}</>)
+        return (<>{loading ? <LoadingGriCtx.Provider value={{ message }}><LoadingGri /></LoadingGriCtx.Provider> : <Route path={props.path} element={session ? props.element : <Navigate to="/login" />}></Route>}</>)
     }
 
     return (

@@ -1,6 +1,5 @@
 import React from 'react';
 import '../../Styles/layout.css';
-import whiteLogo from '../../Assets/img/whiteLogo.png'
 import { Avatar, Dropdown, Menu, Button } from 'antd';
 import { AiOutlineUser } from 'react-icons/ai/index';
 import 'antd/dist/antd.css';
@@ -48,7 +47,7 @@ const Layout = (props)=> {
       </ModalEditUserCtx.Provider>
       <header className='navigator' style={{ height: '60px' }}>
         <div className='menunavigate'>
-          <img src={whiteLogo} alt="CNX Telecom - Você sempre conectado" />
+          <label>GRI</label>
         </div>
         <div className='menunavigate' style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Dropdown overlay={menu} placement="bottomCenter" arrow>

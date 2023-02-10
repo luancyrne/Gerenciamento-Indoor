@@ -1,11 +1,10 @@
 import React from "react";
 import '../../Styles/login.css';
-import whiteLogo from '../../Assets/img/whiteLogo.png';
 import getStoreGuest from "../../Services/controller/store/getStoreGuest";
 import login from '../../Services/login';
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { LoadingCnx, LoadingCnxCtx } from '../../Components/LodingCnx';
+import { LoadingGri, LoadingGriCtx } from '../../Components/LodingGri';
 import store from "../../Store/authStore";
 import { Checkbox } from 'antd'
 
@@ -85,12 +84,12 @@ export class Login extends React.Component {
             <main className='MainLogin'>
                 {
                     this.state.loading
-                        ? <LoadingCnxCtx.Provider value={{ message: this.state.message }}><LoadingCnx /></LoadingCnxCtx.Provider>
+                        ? <LoadingGriCtx.Provider value={{ message: this.state.message }}><LoadingGri /></LoadingGriCtx.Provider>
                         : <>
                             <ToastContainer />
                             <section className='MainCenter'>
                                 <div className='Logo'>
-                                    <img src={whiteLogo} alt="CNX Telecom - Você sempre conectado!" />
+                                    <label>GRI</label>
                                 </div>
                                 <div className='FormLogin'>
                                     <label className='fontgroup'>Usuário:</label>
@@ -114,7 +113,7 @@ export class Login extends React.Component {
                                     <button onClick={this.handleSubmit}>Entrar</button>
                                 </div>
                             </section>
-                            <label className='Footer'>Desenvolvido por © CNX Telecom</label>
+                            <label className='Footer'>Desenvolvido por © Luan Cyrne</label>
                         </>
                 }
             </main>
