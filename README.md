@@ -2,7 +2,7 @@
 # Indoor Media Management
 
 
-This project consists of two dependent parts, one being the <a href="frontend">frontend</a> and the other being the <a href="frontend">backend</a>.
+This project consists of two dependent parts, one being the <a href="https://github.com/luancyrne/Gerenciamento-Indoor/tree/main/frontend">frontend</a> and the other being the <a href="https://github.com/luancyrne/Gerenciamento-Indoor/tree/main/backend">backend</a>.
 Detailed explanations about the project can be found by clicking above.
 
 ## Used by
